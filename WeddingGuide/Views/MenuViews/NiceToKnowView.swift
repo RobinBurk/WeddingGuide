@@ -25,7 +25,7 @@ struct NiceToKnowView: View {
                     if section2Expanded {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Es ist am besten, das Brautpaar-Shooting vor der Trauung zu planen, um mögliche Stressmomente zu vermeiden. Hierzu empfiehlt es sich, einen detaillierten \"Ablaufplan\" zu erstellen, der alle wichtigen Punkte und Zeiten festhält. Weitere Tipps zum Ablaufplan findet ihr unter dem separaten Punkt: ")
-                            NavigationLink(destination: TimeLineView(text: "Ablaufplan")) {
+                            NavigationLink(destination: TimeLineView()) {
                                 Text("Ablaufplan")
                                     .foregroundColor(Color(hex: 0x425C54))
                                     .fontWeight(.bold)

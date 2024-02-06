@@ -2,26 +2,24 @@ import SwiftUI
 
 struct BudgetManagementView: View {
     @Environment(\.presentationMode) var presentationMode
-    
     @EnvironmentObject var userModel: UserViewModel
     
-    @State private var isAddBudgetItemPresented: Bool = false
     @State private var incomeText: String = ""
     @State private var expenseText: String = ""
     @State private var remainingBudget = 0.0
-    @State private var temporaryNewItem: BudgetItem = BudgetItem()
     @State private var startBudget = 0.0
+    @State private var isAddBudgetItemPresented: Bool = false
     @State private var budgetItems: [BudgetItem] = []
-    
-    private let text: String = "Budget"
+    @State private var changeBudgetItemIsActive = false
+    @State private var rememberedIndexForEdit: Int? = nil
     
     var body: some View {
         NavigationView {
-            VStack( alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading) {
                 VStack(spacing: 10) {
                     HStack (spacing: 10) {
                         Text(NumberFormatter.localizedString(from: NSNumber(value: remainingBudget), number: .currency))
-                            .font(.custom("Arial", size: 30))
+                            .font(.custom("Lustria-Regular", size: 30))
                             .fontWeight(.bold)
                             .foregroundColor(.white)
                             .lineLimit(1)
@@ -40,27 +38,26 @@ struct BudgetManagementView: View {
                     
                     ProgressBar(currentValue: startBudget - remainingBudget, maxValue: startBudget, firstColor: Color(hex: 0x425C54), secondColor: .white)
                         .frame(height: 15)
-                    
                     HStack (spacing: 0) {
                         Text(NumberFormatter.localizedString(from: NSNumber(value: startBudget - remainingBudget), number: .currency))
-                            .font(.caption)
+                            .font(.custom("Lustria-Regular", size: 14))
                             .foregroundColor(.white)
                             .lineLimit(1)
                             .minimumScaleFactor(0.4)
                             .fontWeight(.bold)
                         Text(" von ")
-                            .font(.caption)
+                            .font(.custom("Lustria-Regular", size: 13))
                             .foregroundColor(.white)
                             .lineLimit(1)
                             .minimumScaleFactor(0.4)
                         Text(NumberFormatter.localizedString(from: NSNumber(value: startBudget ), number: .currency))
-                            .font(.caption)
+                            .font(.custom("Lustria-Regular", size: 14))
                             .foregroundColor(.white)
                             .lineLimit(1)
                             .minimumScaleFactor(0.4)
                             .fontWeight(.bold)
                         Text(" verbraucht")
-                            .font(.caption)
+                            .font(.custom("Lustria-Regular", size: 13))
                             .foregroundColor(.white)
                             .lineLimit(1)
                             .minimumScaleFactor(0.4)
@@ -73,24 +70,35 @@ struct BudgetManagementView: View {
                 HStack {
                     VStack (alignment: .leading){
                         Text("Einkommen")
+                            .font(.custom("Lustria-Regular", size: 15))
                         Text(incomeText)
+                            .font(.custom("Lustria-Regular", size: 15))
                             .foregroundColor(Color(hex: 0x425C54))
                     }
                     Spacer()
                     VStack (alignment: .trailing) {
                         Text("Ausgaben")
+                            .font(.custom("Lustria-Regular", size: 15))
                         Text(expenseText)
+                            .font(.custom("Lustria-Regular", size: 15))
                             .foregroundColor(Color(hex: 0x990000))
                     }
                 }
-                .padding(10)
+                .padding(.horizontal, 10)
                 
                 List {
                     ForEach(budgetItems.indices, id: \.self) { index in
-                        BudgetItemRowView(budgetItem: $budgetItems[index])
+                        BudgetItemView(budgetItem: $budgetItems[index])
                             .cornerRadius(8)
                             .padding(5)
                             .contextMenu {
+                                Button(action: {
+                                    rememberedIndexForEdit = index
+                                    changeBudgetItemIsActive.toggle()
+                                }) {
+                                    Label("Bearbeiten", systemImage: "pencil")
+                                }
+                                
                                 Button(action: {
                                     deleteUserBudgetItem(at: index)
                                 }) {
@@ -110,10 +118,12 @@ struct BudgetManagementView: View {
                 .shadow(color: Color.gray.opacity(0.8), radius: 3, x: 0, y: 2)
                 .scrollContentBackground(.hidden)
                 
+                Spacer()
+                
                 HStack{
                     Spacer()
                     NavigationLink(destination:
-                                    AddBudgetItemView().onDisappear {
+                                    ChangeBudgetItem(mode: Mode.add).onDisappear {
                         updateBudget()
                     }
                     ) {
@@ -124,7 +134,17 @@ struct BudgetManagementView: View {
                     .padding(.top, 15)
                     .padding(.horizontal, 10)
                     .padding(.bottom, -15)
-                    Spacer()
+                    Spacer() 
+                    
+                    NavigationLink(destination: ChangeBudgetItem(
+                        mode: .edit,
+                        index: rememberedIndexForEdit ?? 0,
+                        items: userModel.user?.budgetItems ?? []
+                    ).onDisappear {
+                        budgetItems = userModel.user?.budgetItems ?? []
+                    }, isActive: $changeBudgetItemIsActive) {
+                        EmptyView()
+                    }
                 }
                 .background(Color(hex: 0xB8C7B9))
             }
@@ -137,7 +157,7 @@ struct BudgetManagementView: View {
         }
         .padding(.top, 35)
         .overlay {
-            Toolbar(text: text, backAction: { self.goBack() })
+            Toolbar(text: "Budget", backAction: { self.goBack() })
         }
         .navigationBarBackButtonHidden(true)
         .navigationBarHidden(true)
@@ -193,29 +213,6 @@ struct ProgressBar: View {
     }
 }
 
-struct BudgetItemRowView: View {
-    @Binding var budgetItem: BudgetItem
-    
-    var body: some View {
-        VStack {
-            Picker("", selection: $budgetItem.type) {
-                Text("Einkommen").tag(BudgetItemType.income)
-                Text("Ausgabe").tag(BudgetItemType.expense)
-            }
-            .pickerStyle(SegmentedPickerStyle())
-            .padding(.horizontal, 10)
-            
-            HStack {
-                Text(budgetItem.description)
-                Spacer()
-                Text(NumberFormatter.localizedString(from: NSNumber(value: budgetItem.amount), number: .currency))
-                    .foregroundColor(budgetItem.type == .income ? Color(hex: 0x425C54) : Color(hex: 0x990000))
-            }.padding(.top, 5)
-        }
-        .padding()
-    }
-}
-
 struct CustomNumberField: View {
     var title: String
     var value: Binding<NSNumber>
@@ -263,38 +260,6 @@ struct BudgetItem: Identifiable, Codable {
         self.description = description
         self.type = type
         self.amount = amount
-    }
-    
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(UUID.self, forKey: .id)
-        description = try container.decode(String.self, forKey: .description)
-        type = try container.decode(BudgetItemType.self, forKey: .type)
-        amount = try container.decode(Double.self, forKey: .amount)
-    }
-    
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(id, forKey: .id)
-        try container.encode(description, forKey: .description)
-        try container.encode(type, forKey: .type)
-        try container.encode(amount, forKey: .amount)
-    }
-    
-    static func fromJSONArrayString(_ jsonString: String) throws -> [BudgetItem] {
-        let decoder = JSONDecoder()
-        let data = Data(jsonString.utf8)
-        return try decoder.decode([BudgetItem].self, from: data)
-    }
-    
-    static func toJSONStringArray(_ items: [BudgetItem]) throws -> String {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted
-        let data = try encoder.encode(items)
-        guard let jsonString = String(data: data, encoding: .utf8) else {
-            throw EncodingError.invalidValue(items, EncodingError.Context(codingPath: [], debugDescription: "Failed to convert data to string"))
-        }
-        return jsonString
     }
 }
 

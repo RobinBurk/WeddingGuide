@@ -123,6 +123,7 @@ struct InspirationCategoryView: View {
         VStack {
             HStack {
                 Text(categoryName)
+                    .font(.custom("Lustria-Regular", size: 16))
                     .padding(.leading, 5)
                     .lineLimit(1)
                     .minimumScaleFactor(0.3)
@@ -130,9 +131,12 @@ struct InspirationCategoryView: View {
                 Button {
                     showAllImages()
                 } label: {
-                    Text("Alle").foregroundColor(Color(hex: 0x425C54))
+                    Text("Alle")
+                        .foregroundColor(Color(hex: 0x425C54))
+                        .font(.custom("Lustria-Regular", size: 16))
                 }.padding(.trailing, 5)
             }
+            
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
                     ForEach(imageUrls.prefix(3), id: \.self) { url in

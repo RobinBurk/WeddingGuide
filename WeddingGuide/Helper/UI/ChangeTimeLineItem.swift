@@ -1,20 +1,44 @@
 import SwiftUI
 
-struct AddTimeLineItem: View {
+struct ChangeTimeLineItem: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var userModel: UserViewModel
     
-    @State private var newItem: TimeLineItem = TimeLineItem()
+    @State private var newItem: TimeLineItem
     @State private var showAlert = false
     @State private var alertMessage = ""
     @State private var startTime = Date()
     @State private var endTime = Date()
     
+    var mode: Mode
+    var index: Int
+    
+    // Initializer for the add mode
+    init(mode: Mode) {
+        self.mode = mode
+        self._newItem = State(initialValue: TimeLineItem())
+        self.index = -1 // Set a default value for index, or you can make it optional
+    }
+    
+    // Initializer for the edit mode
+    init(mode: Mode, index: Int, items: [TimeLineItem]) {
+        self.mode = mode
+        
+        if index >= 0 && index < items.count {
+            self.index = index
+            self._newItem = State(initialValue: items[index])
+        } else {
+            // Handle the case where index is out of range, set a default or handle it accordingly.
+            self.index = -1
+            self._newItem = State(initialValue: TimeLineItem())
+        }
+    }
+    
     var body: some View {
         VStack {
             Spacer()
             
-            Text("Eintrag hinzufügen")
+            Text(titleText)
                 .font(.custom("Lustria-Regular", size: 26))
             
             TextField("Titel", text: $newItem.title)
@@ -51,19 +75,32 @@ struct AddTimeLineItem: View {
                     return
                 }
                 
-                print("Added new item \(newItem.title)")
                 updateStartTime(startTime)
                 updateEndTime(endTime)
                 
-                DispatchQueue.main.async {
-                    userModel.user?.timeLineItems.append(newItem)
-                    userModel.update()
-                    print("Temporary new item title: \(newItem.title)")
+                if mode == Mode.add {
+                    print("Added new item \(newItem.title)")
+                    
+                    DispatchQueue.main.async {
+                        userModel.user?.timeLineItems.append(newItem)
+                        userModel.update()
+                        print("Temporary new item title: \(newItem.title)")
+                    }
+                }
+                
+                if mode == Mode.edit {
+                    print("Changed new item \(newItem.title)")
+                    
+                    DispatchQueue.main.async {
+                        userModel.user?.timeLineItems[index] = newItem // Update the existing item
+                        userModel.update()
+                        print("Temporary updated item title: \(newItem.title)")
+                    }
                 }
                 
                 goBack()
             }) {
-                Text("Hinzufügen")
+                Text(actionButtonText)
                     .padding()
                     .frame(maxWidth: .infinity)
                     .foregroundColor(.white)
@@ -117,6 +154,24 @@ struct AddTimeLineItem: View {
         .navigationBarBackButtonHidden(true)
         .navigationBarHidden(true)
         .padding()
+    } 
+    
+    var titleText: String {
+        switch mode {
+        case .add:
+            return "Eintrag hinzufügen"
+        case .edit:
+            return "Eintrag bearbeiten"
+        }
+    }
+    
+    var actionButtonText: String {
+        switch mode {
+        case .add:
+            return "Hinzufügen"
+        case .edit:
+            return "Bearbeiten"
+        }
     }
     
     private func updateStartTime(_ newDate: Date) {
@@ -152,9 +207,7 @@ struct AddTimeLineItem: View {
 
 struct AddTimeLineItem_Previews: PreviewProvider {
     static var previews: some View {
-        let dataManager = DataManager()
-
-        return AddTimeLineItem()
-            .environmentObject(dataManager)
+        ChangeTimeLineItem(mode: Mode.add)
+            .environmentObject(UserViewModel())
     }
 }

@@ -17,6 +17,7 @@ struct User : Codable {
     var checkboxStatesPreparationBride: [Bool] = Array(repeating: false, count: 6)
     var checkboxStatesPreparationGroom: [Bool] = Array(repeating: false, count: 4)
     var timeLineItems: [TimeLineItem] = []
+    var guestListItems: [GuestListItem] = []
     var weddingMotto  = ""
     var dressCode  = ""
     var importantDetails = ""

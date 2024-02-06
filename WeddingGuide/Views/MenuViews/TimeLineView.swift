@@ -10,11 +10,8 @@ struct TimeLineView: View {
     @State private var newItemEndTime = Date()
     @State private var timeLineItems: [TimeLineItem] = []
     
-    private let text: String
-    
-    init(text: String) {
-        self.text = text
-    }
+    @State private var changeTimeLineItemIsActive = false
+    @State private var rememberedIndexForEdit: Int? = nil
     
     var body: some View {
         NavigationView {
@@ -33,6 +30,13 @@ struct TimeLineView: View {
                             .cornerRadius(8)
                             .padding(5)
                             .contextMenu {
+                                Button(action: {
+                                    rememberedIndexForEdit = index
+                                    changeTimeLineItemIsActive.toggle()
+                                }) {
+                                    Label("Bearbeiten", systemImage: "pencil")
+                                }
+                                
                                 Button(action: {
                                     deleteUserTimeLineItem(at: index)
                                 }) {
@@ -58,10 +62,8 @@ struct TimeLineView: View {
                 
                 HStack{
                     Spacer()
-                    NavigationLink(destination:
-                                    AddTimeLineItem().onDisappear {
-                        timeLineItems = userModel.user?.timeLineItems ?? []
-                    }
+                    NavigationLink(destination: ChangeTimeLineItem(mode: Mode.add).onDisappear {
+                        timeLineItems = userModel.user?.timeLineItems ?? []}
                     ) {
                         Label("", systemImage: "plus.circle")
                             .font(.custom("Lustria-Regular", size: 30))
@@ -73,6 +75,16 @@ struct TimeLineView: View {
                     Spacer()
                 }
                 .background(Color(hex: 0xB8C7B9))
+                
+                NavigationLink(destination: ChangeTimeLineItem(
+                    mode: .edit, 
+                    index: rememberedIndexForEdit ?? 0,
+                    items: userModel.user?.timeLineItems ?? []
+                ).onDisappear {
+                    timeLineItems = userModel.user?.timeLineItems ?? []
+                }, isActive: $changeTimeLineItemIsActive) {
+                    EmptyView()
+                }
             }
         }
         .onAppear {
@@ -80,7 +92,7 @@ struct TimeLineView: View {
         }
         .padding(.top, 35)
         .overlay {
-            Toolbar(text: text, backAction: { self.goBack() })
+            Toolbar(text: "Ablaufplan", backAction: { self.goBack() })
         }
         .onTapGesture {
             // Dismiss the keyboard when tapped outside the text fields
@@ -140,30 +152,5 @@ struct TimeLineItem: Identifiable, Codable  {
         case extra
         case startTime
         case endTime
-    }
-    
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(UUID.self, forKey: .id)
-        title = try container.decode(String.self, forKey: .title)
-        extra = try container.decode(String.self, forKey: .extra)
-        startTime = try container.decode(Int.self, forKey: .startTime)
-        endTime = try container.decode(Int.self, forKey: .endTime)
-    }
-    
-    static func fromJSONArrayString(_ jsonString: String) throws -> [TimeLineItem] {
-        let decoder = JSONDecoder()
-        let data = Data(jsonString.utf8)
-        return try decoder.decode([TimeLineItem].self, from: data)
-    }
-    
-    static func toJSONStringArray(_ items: [TimeLineItem]) throws -> String {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted
-        let data = try encoder.encode(items)
-        guard let jsonString = String(data: data, encoding: .utf8) else {
-            throw EncodingError.invalidValue(items, EncodingError.Context(codingPath: [], debugDescription: "Failed to convert data to string"))
-        }
-        return jsonString
     }
 }
