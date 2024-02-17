@@ -178,16 +178,16 @@ struct AllServiceProviderDetailView: View {
     @State private var show: Bool = false
     let title: String
     var serviceProviders = [ServieProviderDetailView]()
-
+    
     init(title: String, serviceProviders: [ServieProviderDetailView]) {
         self.title = title
         self.serviceProviders = serviceProviders
     }
-
+    
     var body: some View {
         VStack {
             SectionHeaderView(title: title, isExpanded: $show)
-
+            
             if show {
                 ScrollView(.vertical) {
                     VStack(spacing: 20) {
@@ -266,12 +266,18 @@ struct ServieProviderDetailView: View , Hashable{
                             UIApplication.shared.open(url)
                         }
                     }) {
-                        Text("ANRUFEN")
-                            .foregroundColor(.white)
-                            .padding()
-                            .background(Color(hex: 0x425C54))
-                            .cornerRadius(10)
-                    }  .frame(maxWidth: .infinity)
+                        HStack {
+                            Image(systemName: "phone.circle.fill")
+                            Text("ANRUFEN")
+                        }
+                        .font(.custom("Lustria-Regular", size: 18))
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color(hex: 0x425C54))
+                        .cornerRadius(10)
+                        .frame(maxWidth: .infinity)
+                    }
+                    .frame(maxWidth: .infinity)
                 }
                 
                 if !email.isEmpty {
@@ -286,12 +292,16 @@ struct ServieProviderDetailView: View , Hashable{
                             showAlert(title: "Fehler", message: "E-Mail konnte nicht geöffnet werden. Überprüfen Sie Ihre E-Mail-Konfiguration.")
                         }
                     }) {
-                        Text("E-MAIL")
-                            .foregroundColor(.white)
-                            .padding()
-                            .background(Color(hex: 0x425C54))
-                            .cornerRadius(10)
-                            .font(.custom("Lustria-Regular", size: 18))
+                        HStack {
+                            Image(systemName: "envelope.circle.fill")
+                            Text("E-MAIL")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .font(.custom("Lustria-Regular", size: 18))
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color(hex: 0x425C54))
+                        .cornerRadius(10)
                     }.frame(maxWidth: .infinity)
                 }
             }
@@ -318,7 +328,7 @@ struct ServieProviderDetailView: View , Hashable{
         hasher.combine(address)
         hasher.combine(title)
         hasher.combine(description)
-    }   
+    }
     
     private func showAlert(title: String, message: String) {
         alertTitle = title

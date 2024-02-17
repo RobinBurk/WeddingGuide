@@ -1,18 +1,32 @@
 import SwiftUI
 
+enum ActiveAlert {
+    case error, success
+}
+
 struct AuthenticationView: View {
-    @State private var showError = false
+    @State private var showAlert = false
+    @State private var activeAlert: ActiveAlert = .error
     @State private var errorMessage = ""
     
     var body: some View {
         NavigationView{
-            SignInView(showError: $showError, errorMessage: $errorMessage)
-                .alert(isPresented: $showError) {
-                    Alert(
-                        title: Text("Error"),
-                        message: Text(errorMessage),
-                        dismissButton: .default(Text("OK"))
-                    )
+            SignInView(showAlert: $showAlert, errorMessage: $errorMessage, activeAlert: $activeAlert)
+                .alert(isPresented: $showAlert) {
+                    switch activeAlert {
+                    case .error:
+                        return Alert(
+                            title: Text("Error"),
+                            message: Text(errorMessage),
+                            dismissButton: .default(Text("OK"))
+                        )
+                    case .success:
+                        return Alert(
+                            title: Text("Erfolgreich"),
+                            message: Text("Eine E-Mail zum Zurücksetzen des Passworts wurde gesendet."),
+                            dismissButton: .default(Text("OK"))
+                        )
+                    }
                 }
         }
         .navigationBarBackButtonHidden(true)
@@ -25,8 +39,9 @@ struct SignInView: View {
     @State private var email: String = ""
     @State private var password: String = ""
     
-    @Binding var showError: Bool
+    @Binding var showAlert: Bool
     @Binding var errorMessage: String
+    @Binding var activeAlert: ActiveAlert
     
     var body: some View {
         ZStack {
@@ -62,6 +77,7 @@ struct SignInView: View {
                         .disableAutocorrection(true)
                     Spacer().frame(width: 60)
                 }
+                
                 HStack {
                     Spacer().frame(width: 60)
                     SecureField("Password", text: $password)
@@ -79,10 +95,38 @@ struct SignInView: View {
                     Spacer().frame(width: 60)
                 }
                 Button(action: {
+                    userModel.resetPassword(email: email) { nsError in
+                        if let nsError = nsError {
+                            errorMessage = nsError.localizedDescription
+                            activeAlert = ActiveAlert.error
+                            showAlert.toggle()
+                            print("Error during password-reset: \(nsError.localizedDescription)")
+                        } else {
+                            activeAlert = ActiveAlert.success
+                            showAlert.toggle()
+                            print("Password-reset successfull!")
+                        }
+                    }
+                })
+                {
+                    HStack {
+                        Image(systemName: "questionmark.circle")
+                            .foregroundColor(Color(hex: 0x425C54))
+                            .font(.custom("Lustria-Regular", size: 16))
+                        Text("Passwort vergessen?")
+                            .minimumScaleFactor(0.3)
+                            .lineLimit(1)
+                            .foregroundColor(Color(hex: 0x425C54))
+                            .font(.custom("Lustria-Regular", size: 16))
+                    }
+                }
+                
+                Button(action: {
                     userModel.signIn(email: email, password: password) { nsError in
                         if let nsError = nsError {
                             errorMessage = nsError.localizedDescription
-                            showError.toggle()
+                            activeAlert = ActiveAlert.error
+                            showAlert.toggle()
                             print("Error during sign-in: \(nsError.localizedDescription)")
                         } else {
                             // Sign-in was successful
@@ -99,7 +143,7 @@ struct SignInView: View {
                         .minimumScaleFactor(0.5)
                         .lineLimit(1)
                 }
-                NavigationLink(destination: SignUpView(showError: $showError, errorMessage: $errorMessage)) {
+                NavigationLink(destination: SignUpView(showError: $showAlert, errorMessage: $errorMessage)) {
                     Text("Ich bin neu hier. Jetzt Konto erstellen!")
                         .foregroundColor(Color(hex: 0x425C54))
                         .underline()
@@ -309,7 +353,6 @@ struct SignUpView: View {
     }
 }
 
-
 struct ToggleButtonView: View {
     @Binding var isLoginMode: Bool
     
@@ -353,7 +396,7 @@ struct AuthenticationView_Previews: PreviewProvider {
 
 struct SignInView_Previews: PreviewProvider {
     static var previews: some View {
-        SignInView(showError: .constant(false), errorMessage: .constant(""))
+        SignInView(showAlert: .constant(false), errorMessage: .constant(""), activeAlert: .constant(ActiveAlert.error))
             .environmentObject(UserViewModel())  // Pass a sample UserViewModel as an environment object
     }
 }

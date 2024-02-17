@@ -7,8 +7,8 @@ struct User : Codable {
     var hasFinishedWelcome = false
     var firstName = ""
     var lastName = ""
-    var email  = ""
-    var startCode  = ""
+    var email = ""
+    var startCode = ""
     var weddingDay = Date()
     var startBudget = 0.0
     var budgetItems: [BudgetItem] = []
@@ -18,16 +18,17 @@ struct User : Codable {
     var checkboxStatesPreparationGroom: [Bool] = Array(repeating: false, count: 4)
     var timeLineItems: [TimeLineItem] = []
     var guestListItems: [GuestListItem] = []
-    var weddingMotto  = ""
-    var dressCode  = ""
+    var weddingMotto = ""
+    var dressCode = ""
     var importantDetails = ""
     var addressWedding  = ""
     var addressParty = ""
     var namePrideAndGrum = ""
     var nameWitnesses  = ""
     var nameChilds = ""
-    var nameFamiliy  = ""
-    var groupPicturesList  = ""
-    var plannedActions  = ""
-    var additionalInfo  = ""
+    var nameFamiliy = ""
+    var groupPicturesList = ""
+    var plannedActions = ""
+    var additionalInfo = ""
+    var isVIP = false
 }

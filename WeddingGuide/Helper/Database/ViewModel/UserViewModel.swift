@@ -28,6 +28,7 @@ class UserViewModel: ObservableObject {
             if let error = error {
                 let authError = error as NSError
                 print(authError.code)
+                
                 guard result != nil else {
                     print("Sign-in error: \(authError.localizedDescription)")
                     completion(authError)
@@ -77,24 +78,26 @@ class UserViewModel: ObservableObject {
         guard userIsAuthenticated else {
             return
         }
+        
         db.collection("users").document(self.uuid!).getDocument { (document, error) in
             guard document != nil, error == nil else {
                 return
             }
+            
+            
             do {
                 try self.user = document!.data(as: User.self)
             } catch {
                 print("Sync error: \(error)")
             }
-            
         }
-        
     }
     
     private func add(_ user: User) {
         guard userIsAuthenticated else {
             return
         }
+        
         do {
             let _ = try db.collection("users").document(self.uuid!).setData(from: user)
         } catch {
@@ -106,11 +109,114 @@ class UserViewModel: ObservableObject {
         guard userIsAuthenticatedAndSynced else {
             return
         }
+        
         do {
             let _ = try db.collection("users").document(self.uuid!).setData(from: self.user)
         } catch {
             print("Error updating: \(error)")
         }
+    }
+    
+    func resetPassword(email: String, completion: @escaping (Error?) -> Void) {
+        auth.sendPasswordReset(withEmail: email) { error in
+            if let error = error {
+                print("Password reset error: \(error.localizedDescription)")
+                completion(error)
+            } else {
+                print("Password reset email sent successfully.")
+                completion(nil)
+            }
+        }
+    }
+    
+    func updatePassword(currentPassword: String, newPassword: String, completion: @escaping (Error?) -> Void) {
+        guard userIsAuthenticated else {
+            return
+        }
+        
+        guard let currentUser = Auth.auth().currentUser else {
+            return
+        }
+        
+        reauthenticate(password: currentPassword) { error in
+            if let nsError = error {
+                print("Password change - reauthentificate error: \(nsError.localizedDescription)")
+                completion(nsError)
+            } else {
+                currentUser.updatePassword(to: newPassword) { error in
+                    if let nsError = error {
+                        print("Password change error: \(nsError.localizedDescription)")
+                        completion(nsError)
+                    } else {
+                        print("Password change successfully.")
+                        completion(nil)
+                    }
+                }
+            }
+        }
+    }
+    
+    func updateEmail(currentPassword: String, newEmail: String, completion: @escaping (Error?) -> Void) {
+        guard userIsAuthenticated else {
+            return
+        }
+        
+        guard let currentUser = Auth.auth().currentUser else {
+            return
+        }
+        
+        print(currentPassword)
+        print(newEmail)
+        
+        if let currentUser = Auth.auth().currentUser {
+            let newEmail = newEmail
+            let credential = EmailAuthProvider.credential(withEmail: user?.email ?? "", password: currentPassword)
+
+            // Reauthenticate the user with their current email and password
+            currentUser.reauthenticate(with: credential) { authResult, error in
+                if let nsError = error {
+                    print("Email change - reauthenticate error: \(nsError.localizedDescription)")
+                    completion(nsError)
+                } else {
+                    // User successfully reauthenticated, update the email
+                    currentUser.updateEmail(to: newEmail) { error in
+                        if let nsError = error {
+                            print("Email change error: \(nsError.localizedDescription)")
+                            completion(nsError)
+                        } else {
+                            print("Email change successfully.")
+                            self.user?.email = newEmail
+                            self.update()
+                            completion(nil)
+                        }
+                    }
+                }
+            }
+        } else {
+            // No user signed in
+            print("No user signed in.")
+        }
+    }
+    
+    func reauthenticate(password: String, completion: @escaping (Error?) -> Void) {
+        guard userIsAuthenticated else {
+            return
+        }
+        
+        guard let currentUser = Auth.auth().currentUser else {
+            return
+        }
+        
+        let credential: AuthCredential = EmailAuthProvider.credential(withEmail: user?.email ?? "", password: password)
+        currentUser.reauthenticate(with: credential) { authResult, error in
+               if let error = error {
+                   print("Reauthentication error: \(error.localizedDescription)")
+                   completion(error)
+               } else {
+                   print("User re-authenticated successfully.")
+                   completion(nil)
+               }
+           }
     }
     
     func autoLogin() {

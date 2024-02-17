@@ -71,6 +71,8 @@
 		40CF43352B5826B0008CDD32 /* UserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40CF43342B5826B0008CDD32 /* UserViewModel.swift */; };
 		40CFCD742B2F3E080024728A /* MenuItemTextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40CFCD732B2F3E080024728A /* MenuItemTextStyle.swift */; };
 		40CFCD762B2F3E2C0024728A /* BackgroundImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40CFCD752B2F3E2C0024728A /* BackgroundImageView.swift */; };
+		40DE2B952B7A875100767132 /* ChangePasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40DE2B942B7A875100767132 /* ChangePasswordView.swift */; };
+		40DE2B972B7A931400767132 /* ChangeEmail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40DE2B962B7A931400767132 /* ChangeEmail.swift */; };
 		40E4A0F32B2468450031E9E1 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E4A0F22B2468450031E9E1 /* NetworkMonitor.swift */; };
 		40E5BF852B5AC7A5004F0D4F /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 40E5BF842B5AC7A5004F0D4F /* FirebaseAuth */; };
 		40E5BF872B5AC7CA004F0D4F /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 40E5BF862B5AC7CA004F0D4F /* FirebaseFirestoreSwift */; };
@@ -161,6 +163,8 @@
 		40CF43342B5826B0008CDD32 /* UserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewModel.swift; sourceTree = "<group>"; };
 		40CFCD732B2F3E080024728A /* MenuItemTextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemTextStyle.swift; sourceTree = "<group>"; };
 		40CFCD752B2F3E2C0024728A /* BackgroundImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundImageView.swift; sourceTree = "<group>"; };
+		40DE2B942B7A875100767132 /* ChangePasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordView.swift; sourceTree = "<group>"; };
+		40DE2B962B7A931400767132 /* ChangeEmail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeEmail.swift; sourceTree = "<group>"; };
 		40E4A0F22B2468450031E9E1 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		40E5BF882B5ACB53004F0D4F /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -338,6 +342,8 @@
 				40A7397D2B70CC0E007578FA /* GuestListItemView.swift */,
 				40A7397F2B70CC5C007578FA /* ChangeGuestListItem.swift */,
 				40CF04E32B7155A300A5B273 /* BudgetItemView.swift */,
+				40DE2B942B7A875100767132 /* ChangePasswordView.swift */,
+				40DE2B962B7A931400767132 /* ChangeEmail.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -555,6 +561,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				40B015222AECF3C00055C154 /* HomeView.swift in Sources */,
+				40DE2B952B7A875100767132 /* ChangePasswordView.swift in Sources */,
 				40AFB43E2B50522700677C05 /* ChangeBudgetItem.swift in Sources */,
 				40B861B42AF938E30089BD04 /* PreparationView.swift in Sources */,
 				40A66E032B08ECAA0068B38D /* CheckboxListView.swift in Sources */,
@@ -581,6 +588,7 @@
 				40A7397E2B70CC0E007578FA /* GuestListItemView.swift in Sources */,
 				40996EFB2B00D4FA00AAB049 /* SectionHeaderView.swift in Sources */,
 				40CF04E22B7138A400A5B273 /* Mode.swift in Sources */,
+				40DE2B972B7A931400767132 /* ChangeEmail.swift in Sources */,
 				407AC3F52B5EEC3F0003EB62 /* DataManager.swift in Sources */,
 				40CF43352B5826B0008CDD32 /* UserViewModel.swift in Sources */,
 				40A739802B70CC5C007578FA /* ChangeGuestListItem.swift in Sources */,
@@ -779,7 +787,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.2;
+				MARKETING_VERSION = 0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = KWICKSHOT.WeddingGuide;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -818,7 +826,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.2;
+				MARKETING_VERSION = 0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = KWICKSHOT.WeddingGuide;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

@@ -6,36 +6,55 @@ struct ProfileView: View {
     
     var body: some View {
         VStack {
-            if let user = userModel.user {
-                ProfileItemView(title: "Vorname", value: user.firstName)
+            ProfileItemView(title: "Vorname", value: userModel.user?.firstName ?? "")
                     .padding(.horizontal)
-                ProfileItemView(title: "Nachname", value: user.lastName)
+                ProfileItemView(title: "Nachname", value: userModel.user?.lastName ?? "")
                     .padding(.horizontal)
-                ProfileItemView(title: "E-Mail", value: user.email)
+                EmailView()
                     .padding(.horizontal)
-                StartBudgetView(user: user)
+                PasswordView()
+                    .padding(.horizontal)
+                StartBudgetView()
                     .padding(.horizontal)
                 
-            } else {
-                Text("Benutzerinformationen konnten nicht abgerufen werden.")
-                    .foregroundColor(.red)
+                Button(action: {
+                    // Action when VIP Access button is tapped
+                }) {
+                    HStack {
+                        Image(systemName: "crown.fill")
+                            .font(.custom("Lustria-Regular", size: 18))
+                        Text("VIP-ACCESS")
+                            .font(.custom("Lustria-Regular", size: 18))
+                    }
+                    .frame(width: 320)
                     .padding()
-            }
-            
-            Button(action: {
-                userModel.signOut()
-            }) {
-                Text("Abmelden")
+                    .foregroundColor(.white)
+                    .background(Color.yellow)
+                    .cornerRadius(10)
+                    .padding(.top)
+                }
+                
+                Button(action: {
+                    userModel.signOut()
+                }) {
+                    HStack {
+                        Image(systemName: "power")
+                            .font(.custom("Lustria-Regular", size: 18))
+                        Text("ABMELDEN")
+                            .font(.custom("Lustria-Regular", size: 18))
+                    }
+                    .frame(width: 320)
                     .font(.headline)
                     .padding()
                     .foregroundColor(.white)
                     .background(Color.red)
                     .cornerRadius(10)
-            }
-            .padding(.top)
-            
+                }
             Spacer()
         }
+        //.onAppear {
+        //    user = userModel.user
+       // }
         .padding(.top, 50)
         .overlay {
             Toolbar(text: "Dein Profil", backAction: { self.goBack() })
@@ -54,22 +73,109 @@ struct ProfileView: View {
     }
 }
 
+struct ProfileItemView: View {
+    var title: String
+    var value: String
+    
+    var body: some View {
+        HStack {
+            Text(title)
+                .font(.custom("Lustria-Regular", size: 16))
+                .foregroundColor(.secondary)
+            Spacer()
+            Text(value)
+                .font(.custom("Lustria-Regular", size: 16))
+                .fontWeight(.bold)
+        }
+        .padding(.vertical, 8)
+        .padding(.horizontal, 15)
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(radius: 5)
+    }
+}
+
+struct EmailView: View {
+    @EnvironmentObject var userModel: UserViewModel
+    
+    var body: some View {
+        HStack {
+            Text("Email")
+                .font(.custom("Lustria-Regular", size: 16))
+                .foregroundColor(.secondary)
+                .background(Color.white)
+                .cornerRadius(10)
+                .padding(.trailing , 15)
+            Spacer()
+            Text(userModel.user?.email ?? "")
+                .font(.custom("Lustria-Regular", size: 16))
+                .fontWeight(.bold)
+            Spacer()
+            NavigationLink(destination: ChangeEmailView()) {
+                Text("Ändern")
+                    .font(.custom("Lustria-Regular", size: 16))
+                    .padding(.vertical, 4)
+                    .padding(.horizontal, 15)
+                    .foregroundColor(.white)
+                    .background(Color(hex: 0x425C54))
+                    .cornerRadius(10)
+            }
+            .padding(.vertical, 2)
+        }
+        .padding(.vertical, 2)
+        .padding(.horizontal, 15)
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(radius: 5)
+    }
+}
+
+
+struct PasswordView: View {
+    var body: some View {
+        HStack {
+            Text("Passwort")
+                .font(.custom("Lustria-Regular", size: 16))
+                .foregroundColor(.secondary)
+                .background(Color.white)
+                .cornerRadius(10)
+                .padding(.trailing , 15)
+            Spacer()
+            NavigationLink(destination: ChangePasswordView()) {
+                Text("Ändern")
+                    .font(.custom("Lustria-Regular", size: 16))
+                    .padding(.vertical, 4)
+                    .padding(.horizontal, 15)
+                    .foregroundColor(.white)
+                    .background(Color(hex: 0x425C54))
+                    .cornerRadius(10)
+            }
+            .padding(.vertical, 2)
+        }
+        .padding(.vertical, 2)
+        .padding(.horizontal, 15)
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(radius: 5)
+    }
+}
+
 struct StartBudgetView: View {
     @EnvironmentObject var userModel: UserViewModel
     
-    @State var user: User
     @State private var editedBudget: String = ""
     @State private var showErrorAlert = false
     
     var body: some View {
         HStack {
             Text("Startbudget")
-                .font(.headline)
+                .font(.custom("Lustria-Regular", size: 16))
                 .foregroundColor(.secondary)
                 .background(Color.white)
                 .cornerRadius(10)
                 .padding(.trailing , 15)
             TextField("Budget", text: $editedBudget)
+                .font(.custom("Lustria-Regular", size: 16))
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .keyboardType(.decimalPad)
                 .background(Color.white)
@@ -84,18 +190,18 @@ struct StartBudgetView: View {
                     // Update the user's startBudget in your UserViewModel
                     userModel.user?.startBudget = editedBudgetValue
                     userModel.update()
-                    user.startBudget = userModel.user?.startBudget ?? 0.0
-                    editedBudget = "\(user.startBudget)€"
+                    editedBudget = "\(userModel.user?.startBudget ?? 0.0)€"
                 } else {
                     print("Invalid budget input")
                     showErrorAlert = true
                 }
             }) {
                 Text("OK")
+                    .font(.custom("Lustria-Regular", size: 16))
                     .padding(.vertical, 4)
                     .padding(.horizontal, 15)
                     .foregroundColor(.white)
-                    .background(Color(hex: 0x425C54))
+                    .background(Color(hex: 0x425C54)) 
                     .cornerRadius(10)
             }
             .alert(isPresented: $showErrorAlert) {
@@ -103,7 +209,7 @@ struct StartBudgetView: View {
             }
         }
         .onAppear {
-            editedBudget = "\(user.startBudget)€"
+            editedBudget = "\(userModel.user?.startBudget ?? 0.0)€"
         }
         .padding(.vertical, 2)
         .padding(.horizontal, 15)
@@ -112,29 +218,6 @@ struct StartBudgetView: View {
         .shadow(radius: 5)
     }
 }
-
-struct ProfileItemView: View {
-    var title: String
-    var value: String
-    
-    var body: some View {
-        HStack {
-            Text(title)
-                .font(.headline)
-                .foregroundColor(.secondary)
-            Spacer()
-            Text(value)
-                .font(.body)
-                .fontWeight(.bold)
-        }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 15)
-        .background(Color.white)
-        .cornerRadius(10)
-        .shadow(radius: 5)
-    }
-}
-
 
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {

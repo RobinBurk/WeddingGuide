@@ -100,15 +100,19 @@ struct ChangeTimeLineItem: View {
                 
                 goBack()
             }) {
-                Text(actionButtonText)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .foregroundColor(.white)
+                HStack {
+                    actionButtonImage
+                        .font(.custom("Lustria-Regular", size: 20))
+                    Text(actionButtonText)
+                        .font(.custom("Lustria-Regular", size: 18))
+                }
+                .frame(width: 320)
+                .font(.headline)
+                .padding()
+                .foregroundColor(.white)
+                .background(Color(hex: 0x425C54))
+                .cornerRadius(10)
             }
-            .font(.custom("Lustria-Regular", size: 18))
-            .background(Color(hex: 0x425C54))
-            .cornerRadius(10)
-            .padding()
             .alert(isPresented: $showAlert) {
                 Alert(title: Text("Fehler"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
             }
@@ -116,12 +120,18 @@ struct ChangeTimeLineItem: View {
             Button(action: {
                 goBack()
             }) {
-                Text("Abbrechen")
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.gray)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+                HStack {
+                    Image(systemName: "xmark.circle")
+                        .font(.custom("Lustria-Regular", size: 20))
+                    Text("ABBRECHEN")
+                        .font(.custom("Lustria-Regular", size: 18))
+                }
+                .frame(width: 320)
+                .font(.headline)
+                .padding()
+                .foregroundColor(.white)
+                .background(Color.gray)
+                .cornerRadius(10)
             }
             .font(.custom("Lustria-Regular", size: 18))
             .padding()
@@ -154,7 +164,7 @@ struct ChangeTimeLineItem: View {
         .navigationBarBackButtonHidden(true)
         .navigationBarHidden(true)
         .padding()
-    } 
+    }
     
     var titleText: String {
         switch mode {
@@ -168,9 +178,18 @@ struct ChangeTimeLineItem: View {
     var actionButtonText: String {
         switch mode {
         case .add:
-            return "Hinzufügen"
+            return "HINZUFÜGEN"
         case .edit:
-            return "Bearbeiten"
+            return "BEARBEITEN"
+        }
+    }
+    
+    var actionButtonImage: Image {
+        switch mode {
+        case .add:
+            return Image(systemName: "plus.circle")
+        case .edit:
+            return  Image(systemName: "pencil")
         }
     }
     
