@@ -18,8 +18,14 @@ class UserViewModel: ObservableObject {
     var userIsAuthenticated: Bool {
         auth.currentUser != nil
     }
+    
     var userIsAuthenticatedAndSynced: Bool {
         user != nil && self.userIsAuthenticated
+    }
+    
+    enum FirestoreError: Error {
+        case noSnapshot
+        case notAuthenticated
     }
     
     // MARK: Firebase Auth Functions
@@ -84,7 +90,6 @@ class UserViewModel: ObservableObject {
                 return
             }
             
-            
             do {
                 try self.user = document!.data(as: User.self)
             } catch {
@@ -131,10 +136,12 @@ class UserViewModel: ObservableObject {
     
     func updatePassword(currentPassword: String, newPassword: String, completion: @escaping (Error?) -> Void) {
         guard userIsAuthenticated else {
+            completion(FirestoreError.notAuthenticated)
             return
         }
         
         guard let currentUser = Auth.auth().currentUser else {
+            completion(FirestoreError.notAuthenticated)
             return
         }
         
@@ -158,10 +165,12 @@ class UserViewModel: ObservableObject {
     
     func updateEmail(currentPassword: String, newEmail: String, completion: @escaping (Error?) -> Void) {
         guard userIsAuthenticated else {
+            completion(FirestoreError.notAuthenticated)
             return
         }
         
         guard let currentUser = Auth.auth().currentUser else {
+            completion(FirestoreError.notAuthenticated)
             return
         }
         
@@ -171,7 +180,7 @@ class UserViewModel: ObservableObject {
         if let currentUser = Auth.auth().currentUser {
             let newEmail = newEmail
             let credential = EmailAuthProvider.credential(withEmail: user?.email ?? "", password: currentPassword)
-
+            
             // Reauthenticate the user with their current email and password
             currentUser.reauthenticate(with: credential) { authResult, error in
                 if let nsError = error {
@@ -200,28 +209,73 @@ class UserViewModel: ObservableObject {
     
     func reauthenticate(password: String, completion: @escaping (Error?) -> Void) {
         guard userIsAuthenticated else {
+            completion(FirestoreError.notAuthenticated)
             return
         }
         
         guard let currentUser = Auth.auth().currentUser else {
+            completion(FirestoreError.notAuthenticated)
             return
         }
         
         let credential: AuthCredential = EmailAuthProvider.credential(withEmail: user?.email ?? "", password: password)
         currentUser.reauthenticate(with: credential) { authResult, error in
-               if let error = error {
-                   print("Reauthentication error: \(error.localizedDescription)")
-                   completion(error)
-               } else {
-                   print("User re-authenticated successfully.")
-                   completion(nil)
-               }
-           }
+            if let error = error {
+                print("Reauthentication error: \(error.localizedDescription)")
+                completion(error)
+            } else {
+                print("User re-authenticated successfully.")
+                completion(nil)
+            }
+        }
     }
     
     func autoLogin() {
         if userIsAuthenticated {
             sync()
+        }
+    }
+    
+    func tryToAccessVIP(startcode: String, completion: @escaping (Error?) -> Void) {
+        // Überprüfen, ob der Benutzer authentifiziert ist
+        guard userIsAuthenticated else {
+            completion(FirestoreError.notAuthenticated)
+            return
+        }
+        
+        // Referenz auf die Firestore-Sammlung "startcodes"
+        let startcodesRef = db.collection("startcodes")
+        
+        // Abrufen aller Dokumente in der Sammlung "startcodes"
+        startcodesRef.getDocuments { (querySnapshot, error) in
+            if let error = error {
+                completion(error)
+                return
+            }
+            
+            guard let querySnapshot = querySnapshot else {
+                completion(FirestoreError.noSnapshot)
+                return
+            }
+            
+            // Iterieren durch jedes Dokument in der Sammlung
+            for document in querySnapshot.documents {
+                // Überprüfen, ob das Feld "code" im Dokument vorhanden ist und mit dem übergebenen Startcode übereinstimmt
+                if let code = document.data()["code"] as? String, code == startcode {
+                    // Den VIP-Status des Benutzers setzen
+                    self.user?.isVIP = true
+                    self.update()
+                    
+                    // Löschen des Startcodes aus der Firestore-Sammlung "startcodes"
+                    startcodesRef.document(document.documentID).delete { error in
+                        if let error = error {
+                            completion(error)
+                        } else {
+                            completion(nil)
+                        }
+                    }
+                }
+            }
         }
     }
 }

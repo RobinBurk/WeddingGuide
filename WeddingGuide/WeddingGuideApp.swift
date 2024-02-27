@@ -9,6 +9,7 @@ struct WeddingGuideApp: App {
     @StateObject var networkMonitor = NetworkMonitor()
     @StateObject private var userModel = UserViewModel()
     @StateObject private var dataManager = DataManager()
+    @StateObject private var storeKitManager = StoreKitManager()
     
     var body: some Scene {
         WindowGroup {
@@ -17,6 +18,7 @@ struct WeddingGuideApp: App {
                 .environmentObject(userModel)
                 .environmentObject(dataManager)
                 .environmentObject(networkMonitor)
+                .environmentObject(storeKitManager)
         }
     }
 }
@@ -26,7 +28,6 @@ class AppDelegate : NSObject, UIApplicationDelegate {
                      didFinishLaunchingWithOptions launchOptions:
                      [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
-       
         return true
     }
 }

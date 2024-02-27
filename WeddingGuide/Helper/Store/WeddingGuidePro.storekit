@@ -1,0 +1,85 @@
+{
+  "identifier" : "FC6A537B",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "8.99",
+      "familyShareable" : false,
+      "internalID" : "6478048704",
+      "localizations" : [
+        {
+          "description" : "Damit sind alle Funktionen der App verfügbar.",
+          "displayName" : "Premium",
+          "locale" : "de"
+        }
+      ],
+      "productID" : "Gekauft_ID",
+      "referenceName" : "Gekauft",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6471373028",
+    "_developerTeamID" : "LVN88W24N3",
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 729856475.19564199,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

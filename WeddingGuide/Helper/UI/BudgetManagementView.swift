@@ -4,6 +4,8 @@ struct BudgetManagementView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var userModel: UserViewModel
     
+    var parentGeometry: GeometryProxy
+    
     @State private var incomeText: String = ""
     @State private var expenseText: String = ""
     @State private var remainingBudget = 0.0
@@ -71,6 +73,7 @@ struct BudgetManagementView: View {
                     VStack (alignment: .leading){
                         Text("Einkommen")
                             .font(.custom("Lustria-Regular", size: 15))
+                            .foregroundColor(.black)
                         Text(incomeText)
                             .font(.custom("Lustria-Regular", size: 15))
                             .foregroundColor(Color(hex: 0x425C54))
@@ -79,6 +82,7 @@ struct BudgetManagementView: View {
                     VStack (alignment: .trailing) {
                         Text("Ausgaben")
                             .font(.custom("Lustria-Regular", size: 15))
+                            .foregroundColor(.black)
                         Text(expenseText)
                             .font(.custom("Lustria-Regular", size: 15))
                             .foregroundColor(Color(hex: 0x990000))
@@ -122,8 +126,7 @@ struct BudgetManagementView: View {
                 
                 HStack{
                     Spacer()
-                    NavigationLink(destination:
-                                    ChangeBudgetItem(mode: Mode.add).onDisappear {
+                    NavigationLink(destination: ChangeBudgetItem(mode: Mode.add).onDisappear {
                         updateBudget()
                     }
                     ) {
@@ -133,8 +136,8 @@ struct BudgetManagementView: View {
                     }
                     .padding(.top, 15)
                     .padding(.horizontal, 10)
-                    .padding(.bottom, -15)
-                    Spacer() 
+                    .padding(.bottom, parentGeometry.size.height * 0.02)
+                    Spacer()
                     
                     NavigationLink(destination: ChangeBudgetItem(
                         mode: .edit,
@@ -149,18 +152,24 @@ struct BudgetManagementView: View {
                 .background(Color(hex: 0xB8C7B9))
             }
         }
-        .onTapGesture {
-            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        }
         .onAppear {
             updateBudget()
         }
-        .padding(.top, 35)
-        .overlay {
-            Toolbar(text: "Budget", backAction: { self.goBack() })
+        .onTapGesture {
+            // Dismiss the keyboard when tapped outside the text fields.
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
-        .navigationBarBackButtonHidden(true)
-        .navigationBarHidden(true)
+        .swipeToDismiss()
+        .navigationBarBackButtonHidden()
+        .navigationBarTitle("", displayMode: .inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                Toolbar(presentationMode: presentationMode, parentGeometry: parentGeometry, title: "Budget")
+            }
+        }
+        .foregroundColor(.white)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarBackground(Color(hex: 0x425C54), for: .navigationBar)
     }
     
     private func deleteUserBudgetItem(at index: Int) {

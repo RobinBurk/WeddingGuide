@@ -5,10 +5,10 @@ struct BudgetItemView: View {
     @Binding var budgetItem: BudgetItem
     
     var body: some View {
-        
         HStack(alignment: .center, spacing: 20) {
             Text(budgetItem.description)
                 .font(.custom("Lustria-Regular", size: 13))
+                .foregroundColor(.black)
             
             Rectangle()
                 .fill(Color(hex: 0xB8C7B9))

@@ -40,21 +40,25 @@ struct ChangeTimeLineItem: View {
             
             Text(titleText)
                 .font(.custom("Lustria-Regular", size: 26))
+                .foregroundColor(.black)
             
             TextField("Titel", text: $newItem.title)
                 .padding()
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .font(.custom("Lustria-Regular", size: 20))
+                .foregroundColor(.black)
             
             TextField("Zusatztext", text: $newItem.extra)
                 .padding()
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .font(.custom("Lustria-Regular", size: 20))
+                .foregroundColor(.black)
             
             DatePicker("Startzeit", selection: $startTime, displayedComponents: .hourAndMinute)
                 .datePickerStyle(GraphicalDatePickerStyle())
                 .padding()
                 .font(.custom("Lustria-Regular", size: 20))
+                .foregroundColor(.black)
                 .onChange(of: startTime) { newValue in
                     updateStartTime(newValue)
                 }
@@ -63,6 +67,7 @@ struct ChangeTimeLineItem: View {
                 .datePickerStyle(GraphicalDatePickerStyle())
                 .padding()
                 .font(.custom("Lustria-Regular", size: 20))
+                .foregroundColor(.black)
                 .onChange(of: endTime) { newValue in
                     updateEndTime(newValue)
                 }

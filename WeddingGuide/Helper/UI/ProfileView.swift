@@ -4,68 +4,108 @@ struct ProfileView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var userModel: UserViewModel
     
+    var parentGeometry: GeometryProxy
+    
+    @State private var counter = 0
+    @State private var counterVIPAccessed = 0
+    @State private var showStartCodeInputDialog = false
+    @State private var enteredStartcode = ""
+    @State private var showStartCodeErrorDialog = false
+    @State private var startCodeErrorMessage = ""
+    
     var body: some View {
         VStack {
             ProfileItemView(title: "Vorname", value: userModel.user?.firstName ?? "")
-                    .padding(.horizontal)
-                ProfileItemView(title: "Nachname", value: userModel.user?.lastName ?? "")
-                    .padding(.horizontal)
-                EmailView()
-                    .padding(.horizontal)
-                PasswordView()
-                    .padding(.horizontal)
-                StartBudgetView()
-                    .padding(.horizontal)
-                
-                Button(action: {
+                .padding(.horizontal)
+            ProfileItemView(title: "Nachname", value: userModel.user?.lastName ?? "")
+                .padding(.horizontal)
+            EmailView(parentGeometry: parentGeometry)
+                .padding(.horizontal)
+            PasswordView(parentGeometry: parentGeometry)
+                .padding(.horizontal)
+            StartBudgetView(parentGeometry: parentGeometry)
+                .padding(.horizontal)
+            
+            Button(action: {
+                if !(userModel.user?.isVIP ?? false) {
+                    showStartCodeInputDialog.toggle()
+                } else {
                     // Action when VIP Access button is tapped
-                }) {
-                    HStack {
-                        Image(systemName: "crown.fill")
-                            .font(.custom("Lustria-Regular", size: 18))
-                        Text("VIP-ACCESS")
-                            .font(.custom("Lustria-Regular", size: 18))
-                    }
-                    .frame(width: 320)
-                    .padding()
-                    .foregroundColor(.white)
-                    .background(Color.yellow)
-                    .cornerRadius(10)
-                    .padding(.top)
+                    // if userModel.isVIP {
+                    counter+=1
+                    // }
                 }
-                
-                Button(action: {
-                    userModel.signOut()
-                }) {
-                    HStack {
-                        Image(systemName: "power")
-                            .font(.custom("Lustria-Regular", size: 18))
-                        Text("ABMELDEN")
-                            .font(.custom("Lustria-Regular", size: 18))
-                    }
-                    .frame(width: 320)
-                    .font(.headline)
-                    .padding()
-                    .foregroundColor(.white)
-                    .background(Color.red)
-                    .cornerRadius(10)
+            }) {
+                HStack {
+                    Image(systemName: "crown.fill")
+                        .font(.custom("Lustria-Regular", size: 18))
+                    Text("VIP-ACCESS")
+                        .font(.custom("Lustria-Regular", size: 18))
                 }
+                .frame(width: 320)
+                .padding()
+                .foregroundColor(.white)
+                .background(Color(hex: 0x425C54))
+                .cornerRadius(10)
+                .padding(.top)
+            }
+            .alert("VIP-Zugriff", isPresented: $showStartCodeInputDialog) {
+                TextField("Startcode", text: $enteredStartcode)
+                    .foregroundColor(.black)
+                Button("OK") {
+                    userModel.tryToAccessVIP(startcode: enteredStartcode) { error in
+                        if let error = error {
+                            print("Fehler beim Versuch, VIP-Zugriff zu erhalten: \(error.localizedDescription)")
+                            startCodeErrorMessage = error.localizedDescription
+                        } else {
+                            print("VIP-Zugriff erfolgreich erhalten.")
+                            counterVIPAccessed+=1
+                        }
+                    }
+                }
+                Button("Abbrechen", role: .cancel) { }
+            }
+            .alert("Error", isPresented: $showStartCodeErrorDialog) {
+                Text("Das hat nicht geklappt. Fehler: \(startCodeErrorMessage)")
+            }
+            .confettiCannon(counter: $counter, num: 30, confettis: [.text("🕊️"), .text("🤍")], confettiSize: 20.0, openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: 170)
+            .confettiCannon(counter: $counterVIPAccessed, num: 100, confettis: [.text("🕊️"), .text("🤍")], confettiSize: 20.0, openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: 170, repetitions: 2)
+            
+            Button(action: {
+                userModel.signOut()
+            }) {
+                HStack {
+                    Image(systemName: "power")
+                        .font(.custom("Lustria-Regular", size: 18))
+                    Text("ABMELDEN")
+                        .font(.custom("Lustria-Regular", size: 18))
+                }
+                .frame(width: 320)
+                .font(.headline)
+                .padding()
+                .foregroundColor(.white)
+                .background(Color.red)
+                .cornerRadius(10)
+            }
             Spacer()
         }
-        //.onAppear {
-        //    user = userModel.user
-       // }
-        .padding(.top, 50)
-        .overlay {
-            Toolbar(text: "Dein Profil", backAction: { self.goBack() })
-        }
+        .swipeToDismiss()
         .onTapGesture {
-            // Dismiss the keyboard when tapped outside the text fields
+            // Dismiss the keyboard when tapped outside the text fields.
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
-        .swipeToDismiss()
-        .navigationBarBackButtonHidden(true)
-        .navigationBarHidden(true)
+        .padding(.top, 10)
+        .navigationBarBackButtonHidden()
+        .navigationBarTitle("", displayMode: .inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                Toolbar(presentationMode: presentationMode, parentGeometry: parentGeometry, title: "Profile")
+            }
+        }
+        .foregroundColor(.white)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarBackground(Color(hex: 0x425C54), for: .navigationBar)
+        
     }
     
     func goBack() {
@@ -82,10 +122,15 @@ struct ProfileItemView: View {
             Text(title)
                 .font(.custom("Lustria-Regular", size: 16))
                 .foregroundColor(.secondary)
+                .minimumScaleFactor(0.4)
+                .lineLimit(1)
             Spacer()
             Text(value)
                 .font(.custom("Lustria-Regular", size: 16))
+                .foregroundColor(.black)
                 .fontWeight(.bold)
+                .minimumScaleFactor(0.4)
+                .lineLimit(1)
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 15)
@@ -98,6 +143,8 @@ struct ProfileItemView: View {
 struct EmailView: View {
     @EnvironmentObject var userModel: UserViewModel
     
+    var parentGeometry: GeometryProxy
+    
     var body: some View {
         HStack {
             Text("Email")
@@ -105,13 +152,18 @@ struct EmailView: View {
                 .foregroundColor(.secondary)
                 .background(Color.white)
                 .cornerRadius(10)
+                .minimumScaleFactor(0.4)
+                .lineLimit(1)
                 .padding(.trailing , 15)
             Spacer()
             Text(userModel.user?.email ?? "")
                 .font(.custom("Lustria-Regular", size: 16))
+                .foregroundColor(.black)
                 .fontWeight(.bold)
+                .minimumScaleFactor(0.4)
+                .lineLimit(1)
             Spacer()
-            NavigationLink(destination: ChangeEmailView()) {
+            NavigationLink(destination: ChangeEmailView(parentGeometry: parentGeometry)) {
                 Text("Ändern")
                     .font(.custom("Lustria-Regular", size: 16))
                     .padding(.vertical, 4)
@@ -119,6 +171,8 @@ struct EmailView: View {
                     .foregroundColor(.white)
                     .background(Color(hex: 0x425C54))
                     .cornerRadius(10)
+                    .minimumScaleFactor(0.4)
+                    .lineLimit(1)
             }
             .padding(.vertical, 2)
         }
@@ -132,6 +186,8 @@ struct EmailView: View {
 
 
 struct PasswordView: View {
+    var parentGeometry: GeometryProxy
+    
     var body: some View {
         HStack {
             Text("Passwort")
@@ -140,8 +196,10 @@ struct PasswordView: View {
                 .background(Color.white)
                 .cornerRadius(10)
                 .padding(.trailing , 15)
+                .minimumScaleFactor(0.4)
+                .lineLimit(1)
             Spacer()
-            NavigationLink(destination: ChangePasswordView()) {
+            NavigationLink(destination: ChangePasswordView(parentGeometry: parentGeometry)) {
                 Text("Ändern")
                     .font(.custom("Lustria-Regular", size: 16))
                     .padding(.vertical, 4)
@@ -149,6 +207,8 @@ struct PasswordView: View {
                     .foregroundColor(.white)
                     .background(Color(hex: 0x425C54))
                     .cornerRadius(10)
+                    .minimumScaleFactor(0.4)
+                    .lineLimit(1)
             }
             .padding(.vertical, 2)
         }
@@ -163,6 +223,8 @@ struct PasswordView: View {
 struct StartBudgetView: View {
     @EnvironmentObject var userModel: UserViewModel
     
+    var parentGeometry: GeometryProxy
+    
     @State private var editedBudget: String = ""
     @State private var showErrorAlert = false
     
@@ -174,13 +236,18 @@ struct StartBudgetView: View {
                 .background(Color.white)
                 .cornerRadius(10)
                 .padding(.trailing , 15)
+                .minimumScaleFactor(0.4)
+                .lineLimit(1)
             TextField("Budget", text: $editedBudget)
                 .font(.custom("Lustria-Regular", size: 16))
+                .foregroundColor(.black)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .keyboardType(.decimalPad)
                 .background(Color.white)
                 .fontWeight(.bold)
                 .multilineTextAlignment(.trailing)
+                .minimumScaleFactor(0.4)
+                .lineLimit(1)
             Button(action: {
                 // Remove Euro symbol if present and trim whitespaces
                 var sanitizedBudget = editedBudget.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -196,13 +263,17 @@ struct StartBudgetView: View {
                     showErrorAlert = true
                 }
             }) {
-                Text("OK")
-                    .font(.custom("Lustria-Regular", size: 16))
-                    .padding(.vertical, 4)
-                    .padding(.horizontal, 15)
-                    .foregroundColor(.white)
-                    .background(Color(hex: 0x425C54)) 
-                    .cornerRadius(10)
+                NavigationLink(destination: ChangeStartBudget(parentGeometry: parentGeometry)) {
+                    Text("Ändern")
+                        .font(.custom("Lustria-Regular", size: 16))
+                        .padding(.vertical, 4)
+                        .padding(.horizontal, 15)
+                        .foregroundColor(.white)
+                        .background(Color(hex: 0x425C54))
+                        .cornerRadius(10)
+                        .minimumScaleFactor(0.4)
+                        .lineLimit(1)
+                }
             }
             .alert(isPresented: $showErrorAlert) {
                 Alert(title: Text("Fehler"), message: Text("Ungültiges Budget"), dismissButton: .default(Text("OK")))
@@ -222,13 +293,16 @@ struct StartBudgetView: View {
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
         let userViewModel = UserViewModel()
+        var isVisible = true
         
         // Create a new user for preview
         let previewUser = User(firstName: "John", lastName: "Doe", email: "john.doe@example.com", startBudget: 50000)
         userViewModel.user = previewUser
         
-        return ProfileView()
-            .environmentObject(userViewModel)
-            .previewDisplayName("Profile View")
+        return GeometryReader { proxy in
+            ProfileView(parentGeometry: proxy)
+                .environmentObject(userViewModel)
+                .previewDisplayName("Profile View")
+        }
     }
 }

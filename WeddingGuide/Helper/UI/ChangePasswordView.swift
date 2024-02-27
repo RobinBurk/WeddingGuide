@@ -8,6 +8,8 @@ struct ChangePasswordView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var userModel: UserViewModel
     
+    var parentGeometry: GeometryProxy
+    
     @State private var currentPassword = ""
     @State private var newPassword = ""
     @State private var confirmPassword = ""
@@ -19,12 +21,11 @@ struct ChangePasswordView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            
             HStack {
                 Spacer().frame(width: 60)
                 ZStack (alignment: .trailing) {
                     if isCurrentPasswordVisible {
-                        TextField("Aktuelles Password", text: $currentPassword)
+                        TextField("Aktuelles Passwort", text: $currentPassword)
                             .textFieldStyle(PlainTextFieldStyle())
                             .font(.custom("Lustria-Regular", size: 18))
                             .padding()
@@ -37,7 +38,7 @@ struct ChangePasswordView: View {
                             .autocorrectionDisabled()
                             .autocapitalization(.none)
                     } else {
-                        SecureField("Aktuelles Password", text: $currentPassword)
+                        SecureField("Aktuelles Passwort", text: $currentPassword)
                             .textFieldStyle(PlainTextFieldStyle())
                             .font(.custom("Lustria-Regular", size: 18))
                             .padding()
@@ -65,7 +66,7 @@ struct ChangePasswordView: View {
             
             HStack {
                 Spacer().frame(width: 60)
-                SecureField("Neues Password", text: $newPassword)
+                SecureField("Neues Passwort", text: $newPassword)
                     .textFieldStyle(PlainTextFieldStyle())
                     .font(.custom("Lustria-Regular", size: 18))
                     .padding()
@@ -145,7 +146,7 @@ struct ChangePasswordView: View {
             switch changePasswordActiveAlert {
             case .error:
                 return Alert(
-                    title: Text("Error"),
+                    title: Text("Fehler"),
                     message: Text(alertMessage),
                     dismissButton: .default(Text("OK"))
                 )
@@ -158,12 +159,22 @@ struct ChangePasswordView: View {
             }
             
         }
-        .padding(.top, 50)
-        .overlay {
-            Toolbar(text: "Passwort ändern", backAction: { self.goBack() })
+        .onTapGesture {
+            // Dismiss the keyboard when tapped outside the text fields.
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
-        .navigationBarBackButtonHidden(true)
-        .navigationBarHidden(true)
+        .swipeToDismiss()
+        .padding(.top, 10)
+        .navigationBarBackButtonHidden()
+        .navigationBarTitle("", displayMode: .inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                Toolbar(presentationMode: presentationMode, parentGeometry: parentGeometry, title: "Passwort")
+            }
+        }
+        .foregroundColor(.white)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarBackground(Color(hex: 0x425C54), for: .navigationBar)
     }
     
     private func changePassword() {

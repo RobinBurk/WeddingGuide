@@ -8,10 +8,12 @@ struct TimeLineItemView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(formattedTime(timeLineItem.startTime))
                     .font(.custom("Lustria-Regular", size: 16))
+                    .foregroundColor(.black)
                 
                 if timeLineItem.startTime != timeLineItem.endTime {
                     Text(formattedTime(timeLineItem.endTime))
                         .font(.custom("Lustria-Regular", size: 16))
+                        .foregroundColor(.black)
                 }
             }
 
@@ -22,6 +24,7 @@ struct TimeLineItemView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(timeLineItem.title)
                     .font(.custom("Lustria-Regular", size: 18))
+                    .foregroundColor(.black)
                 
                 if !timeLineItem.extra.isEmpty {
                     Text(timeLineItem.extra)

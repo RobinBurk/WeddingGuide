@@ -20,6 +20,7 @@ struct PreHomeView: View {
                 if showWeddingDay {
                     Text("Wann heiratest du?")
                         .font(.custom("Lustria-Regular", size: 30))
+                        .foregroundColor(.black)
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
                     Button("Auswählen") {
@@ -38,6 +39,7 @@ struct PreHomeView: View {
                 if showStartBudget {
                     Text("Welches Budget hast Du eingeplant?")
                         .font(.custom("Lustria-Regular", size: 30))
+                        .foregroundColor(.black)
                         .lineLimit(2)
                         .minimumScaleFactor(0.5)
                     HStack {
@@ -56,6 +58,7 @@ struct PreHomeView: View {
                             })
                         Text("€")
                             .font(.custom("Lustria-Regular", size: 30))
+                            .foregroundColor(.black)
                             .padding()
                         Spacer()
                         Spacer()

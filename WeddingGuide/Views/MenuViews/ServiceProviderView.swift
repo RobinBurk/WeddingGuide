@@ -3,17 +3,16 @@ import SwiftUI
 struct ServiceProviderView: View {
     @Environment(\.presentationMode) var presentationMode
     
-    let text: String
-    let menuItems = ["TRAUREDNER", "MUSIKER", "STYLISTEN", "HOCHZEITSTORTEN", "CATERING", "VIDEOGRAFEN", "GRAFIKER"]
+    var parentGeometry: GeometryProxy
     
-    init(text: String) {
-        self.text = text
-    }
+    let menuItems = ["TRAUREDNER", "MUSIKER", "STYLISTEN", "HOCHZEITSTORTEN", "CATERING", "VIDEOGRAFEN", "GRAFIKER"]
     
     var body: some View {
         NavigationView {
             ScrollView {
-                Text("Ihr seid auf der Suche nach verschiedenen Dienstleistern die eure Hochzeit zu einem unvergesslichen Moment machen? Um es Euch so einfach wie möglich zu machen, haben wie Euch verschiedene Dienstleister zusammengestellt, die wir herzlichst empfehlen würden. Schaut Euch um, stellt direkt eure Anfrage oder nehmt telefonisch Kontakt auf.").padding()
+                Text("Ihr seid auf der Suche nach verschiedenen Dienstleistern rund um den Bodensee die eure Hochzeit zu einem unvergesslichen Moment machen? Um es Euch so einfach wie möglich zu machen, haben wie Euch verschiedene Dienstleister zusammengestellt, die wir herzlichst empfehlen würden. Schaut Euch um, stellt direkt eure Anfrage oder nehmt telefonisch Kontakt auf.")
+                    .foregroundColor(.black)
+                    .padding()
                     .frame(maxWidth: .infinity, alignment: .center)
                 
                 AllServiceProviderDetailView(title: menuItems[0], serviceProviders: [
@@ -152,15 +151,23 @@ struct ServiceProviderView: View {
                     )
                 ])
             }
-            .swipeToDismiss()
-            .padding(.top, 35)
-            .overlay {
-                Toolbar(text: text, backAction: { self.goBack() })
-            }
-            
         }
-        .navigationBarBackButtonHidden(true) // Hide the default back button.
-        .navigationBarHidden(true)
+        .onTapGesture {
+            // Dismiss the keyboard when tapped outside the text fields.
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        }
+        .swipeToDismiss()
+        .padding(.top, 10)
+        .navigationBarBackButtonHidden()
+        .navigationBarTitle("", displayMode: .inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                Toolbar(presentationMode: presentationMode, parentGeometry: parentGeometry, title: "Dienstleister")
+            }
+        }
+        .foregroundColor(.white)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarBackground(Color(hex: 0x425C54), for: .navigationBar)
     }
     
     func goBack() {
@@ -168,12 +175,6 @@ struct ServiceProviderView: View {
     }
 }
 
-
-struct ServiceProviderView_Previews: PreviewProvider {
-    static var previews: some View {
-        ServiceProviderView(text: "Dienstleister")
-    }
-}
 struct AllServiceProviderDetailView: View {
     @State private var show: Bool = false
     let title: String
@@ -248,6 +249,7 @@ struct ServieProviderDetailView: View , Hashable{
                 .fontWeight(.bold)
                 .font(.custom("Lustria-Regular", size: 30))
                 .frame(maxWidth: .infinity, alignment: .center)
+                .foregroundColor(.black)
                 .padding(.leading, 10)
                 .padding(.trailing, 10)
                 .lineLimit(/*@START_MENU_TOKEN@*/2/*@END_MENU_TOKEN@*/)
@@ -255,6 +257,7 @@ struct ServieProviderDetailView: View , Hashable{
                 .multilineTextAlignment(.center)
             
             Text(description)
+                .foregroundColor(.black)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.leading, 10)
                 .padding(.trailing, 10)
@@ -267,7 +270,7 @@ struct ServieProviderDetailView: View , Hashable{
                         }
                     }) {
                         HStack {
-                            Image(systemName: "phone.circle.fill")
+                            Image(systemName: "phone.fill")
                             Text("ANRUFEN")
                         }
                         .font(.custom("Lustria-Regular", size: 18))
@@ -275,6 +278,8 @@ struct ServieProviderDetailView: View , Hashable{
                         .padding()
                         .background(Color(hex: 0x425C54))
                         .cornerRadius(10)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.4)
                         .frame(maxWidth: .infinity)
                     }
                     .frame(maxWidth: .infinity)
@@ -293,11 +298,13 @@ struct ServieProviderDetailView: View , Hashable{
                         }
                     }) {
                         HStack {
-                            Image(systemName: "envelope.circle.fill")
+                            Image(systemName: "envelope.fill")
                             Text("E-MAIL")
                         }
                         .frame(maxWidth: .infinity)
                         .font(.custom("Lustria-Regular", size: 18))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.4)
                         .foregroundColor(.white)
                         .padding()
                         .background(Color(hex: 0x425C54))

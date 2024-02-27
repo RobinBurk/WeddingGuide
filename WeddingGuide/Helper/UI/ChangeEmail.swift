@@ -8,6 +8,8 @@ struct ChangeEmailView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var userModel: UserViewModel
     
+    var parentGeometry: GeometryProxy
+    
     @State private var currentPassword = ""
     @State private var newEmail = ""
     @State private var showAlert = false
@@ -21,7 +23,7 @@ struct ChangeEmailView: View {
                 Spacer().frame(width: 60)
                 ZStack (alignment: .trailing) {
                     if isCurrentPasswordVisible {
-                        TextField("Current Password", text: $currentPassword)
+                        TextField("Aktuelles Passwort", text: $currentPassword)
                             .textFieldStyle(PlainTextFieldStyle())
                             .font(.custom("Lustria-Regular", size: 18))
                             .padding()
@@ -34,7 +36,7 @@ struct ChangeEmailView: View {
                             .autocorrectionDisabled()
                             .autocapitalization(.none)
                     } else {
-                        SecureField("Current Password", text: $currentPassword)
+                        SecureField("Aktuelles Passwort", text: $currentPassword)
                             .textFieldStyle(PlainTextFieldStyle())
                             .font(.custom("Lustria-Regular", size: 18))
                             .padding()
@@ -62,7 +64,7 @@ struct ChangeEmailView: View {
             
             HStack {
                 Spacer().frame(width: 60)
-                TextField("New Email", text: $newEmail)
+                TextField("Neue E-Mail", text: $newEmail)
                     .textFieldStyle(PlainTextFieldStyle())
                     .font(.custom("Lustria-Regular", size: 18))
                     .padding()
@@ -81,8 +83,8 @@ struct ChangeEmailView: View {
                 changeEmail()
             }) {
                 HStack {
-                    Image(systemName: "envelope.circle.fill")
-                    Text("Change Email")
+                    Image(systemName: "envelope.fill")
+                    Text("E-Mail ändern")
                 }
                 .padding()
                 .font(.custom("Lustria-Regular", size: 18))
@@ -99,25 +101,35 @@ struct ChangeEmailView: View {
             switch changeEmailActiveAlert {
             case .error:
                 return Alert(
-                    title: Text("Error"),
+                    title: Text("Fehler"),
                     message: Text(alertMessage),
                     dismissButton: .default(Text("OK"))
                 )
             case .success:
                 return Alert(
                     title: Text("Erfolgreich"),
-                    message: Text("Email wurde erfolgreich geändert."),
+                    message: Text("E-Mail wurde erfolgreich geändert."),
                     dismissButton: .default(Text("OK"))
                 )
             }
             
         }
-        .padding(.top, 50)
-        .overlay {
-            Toolbar(text: "Change Email", backAction: { self.goBack() })
+        .onTapGesture {
+            // Dismiss the keyboard when tapped outside the text fields.
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
-        .navigationBarBackButtonHidden(true)
-        .navigationBarHidden(true)
+        .swipeToDismiss()
+        .padding(.top, 10)
+        .navigationBarBackButtonHidden()
+        .navigationBarTitle("", displayMode: .inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                Toolbar(presentationMode: presentationMode, parentGeometry: parentGeometry, title: "E-Mail")
+            }
+        }
+        .foregroundColor(.white)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarBackground(Color(hex: 0x425C54), for: .navigationBar)
     }
     
     private func changeEmail() {

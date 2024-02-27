@@ -39,15 +39,18 @@ struct ChangeGuestListItem: View {
             
             Text(titleText)
                 .font(.custom("Lustria-Regular", size: 26))
+                .foregroundColor(.black)
             
             TextField("Familienname", text: $newItem.familyName)
                 .padding()
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .font(.custom("Lustria-Regular", size: 20))
+                .foregroundColor(.black)
             
             HStack {
                 Text("Tischnummer:")
                     .font(.custom("Lustria-Regular", size: 20))
+                    .foregroundColor(.black)
                 
                 Spacer()
                 
@@ -64,11 +67,13 @@ struct ChangeGuestListItem: View {
                 .padding()
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .font(.custom("Lustria-Regular", size: 20))
+                .foregroundColor(.black)
             }.padding(.leading, 20)
             
             HStack {
                 Text("Anzahl Personen:")
                     .font(.custom("Lustria-Regular", size: 20))
+                    .foregroundColor(.black)
                 
                 Spacer()
                 
@@ -85,6 +90,7 @@ struct ChangeGuestListItem: View {
                 .padding()
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .font(.custom("Lustria-Regular", size: 20))
+                .foregroundColor(.black)
             }.padding(.leading, 20)
             
             Button(action: {
@@ -131,6 +137,7 @@ struct ChangeGuestListItem: View {
                 .cornerRadius(10)
             }
             .font(.custom("Lustria-Regular", size: 18))
+            .foregroundColor(.black)
             .background(Color(hex: 0x425C54))
             .cornerRadius(10)
             .padding()

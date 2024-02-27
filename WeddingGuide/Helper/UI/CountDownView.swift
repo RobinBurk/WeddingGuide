@@ -7,61 +7,25 @@ struct CountDownView: View {
     @State private var isDatePickerVisible: Bool = false
     @State private var weddingDate = Date()
     
+    var width: CGFloat
+    var height: CGFloat
+    
     var body: some View {
         VStack {
-            HStack(spacing: 10) {
-                VStack(spacing: 10) {
-                    Text("\(countdownComponents.day ?? 0)")
-                        .font(.custom("Lustria-Regular", size: 35))
-                        .foregroundColor(Color(hex: 0x425C54))
-                        .fontWeight(.bold)
-                    Text("TAGE")
-                        .foregroundColor(Color(hex: 0x425C54))
-                        .font(.custom("Lustria-Regular", size:15))
-                        .fontWeight(.bold)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.4)
-                }
-                
-                VStack(spacing: 10) {
-                    Text("\(countdownComponents.hour ?? 0)")
-                        .font(.custom("Lustria-Regular", size: 35))
-                        .foregroundColor(Color(hex: 0x425C54))
-                        .fontWeight(.bold)
-                    Text("STUNDEN")
-                        .foregroundColor(Color(hex: 0x425C54))
-                        .font(.custom("Lustria-Regular", size: 15))
-                        .fontWeight(.bold)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.4)
-                }
-                
-                VStack(spacing: 10) {
-                    Text("\(countdownComponents.minute ?? 0)")
-                        .font(.custom("Lustria-Regular", size: 35))
-                        .foregroundColor(Color(hex: 0x425C54))
-                        .fontWeight(.bold)
-                    Text("MINUTEN")
-                        .foregroundColor(Color(hex: 0x425C54))
-                        .font(.custom("Lustria-Regular", size: 15))
-                        .fontWeight(.bold)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.4)
-                }
-                
-                VStack(spacing: 10) {
-                    Text("\(countdownComponents.second ?? 0)")
-                        .font(.custom("Lustria-Regular", size: 35))
-                        .foregroundColor(Color(hex: 0x425C54))
-                        .fontWeight(.bold)
-                    Text("SEKUNDEN")
-                        .foregroundColor(Color(hex: 0x425C54))
-                        .font(.custom("Lustria-Regular", size: 15))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.4)
-                }
-            }
-        }
+                   HStack(spacing: width * 0.05) {
+                       CountdownItem(value: countdownComponents.day ?? 0, unit: "TAGE")
+                       CountdownItem(value: countdownComponents.hour ?? 0, unit: "STUNDEN")
+                       CountdownItem(value: countdownComponents.minute ?? 0, unit: "MINUTEN")
+                       CountdownItem(value: countdownComponents.second ?? 0, unit: "SEKUNDEN")
+                   }
+               }
+        .padding(10)
+        .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.white.opacity(0.8))
+                        .shadow(radius: 8)
+                )
+        
         .sheet(isPresented: $isDatePickerVisible) {
             VStack {
                 DatePicker("", selection: $weddingDate, in: Date()..., displayedComponents: .date)
@@ -89,10 +53,6 @@ struct CountDownView: View {
                 .lineLimit(1)
             }
         }
-        .padding(10)
-        .background(
-            Color.white.opacity(0.8)
-        )
         .cornerRadius(10)
         .shadow(radius: 8)
         .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
@@ -129,6 +89,27 @@ struct CountDownView: View {
         if let midnightDate = calendar.date(from: components) {
             userModel.user?.weddingDay = midnightDate
             userModel.update()
+        }
+    }
+}
+
+struct CountdownItem: View {
+    var value: Int
+    var unit: String
+    
+    var body: some View {
+        VStack(spacing: 5) {
+            Text("\(value)")
+                .font(.custom("Lustria-Regular", size: 35))
+                .foregroundColor(Color(hex: 0x425C54))
+                .fontWeight(.bold)
+            
+            Text(unit)
+                .foregroundColor(Color(hex: 0x425C54))
+                .font(.custom("Lustria-Regular", size: 15))
+                .fontWeight(.bold)
+                .lineLimit(1)
+                .minimumScaleFactor(0.4)
         }
     }
 }

@@ -2,13 +2,12 @@ import SwiftUI
 
 struct WitnessesView: View {
     @EnvironmentObject var userModel: UserViewModel
-    
     @Environment(\.presentationMode) var presentationMode
+    
+    var parentGeometry: GeometryProxy
     
     @State private var section1Expanded = false
     @State private var section2Expanded = false
-    
-    private let text: String
     
     @State private var checkboxStatesBeforeWedding = Array(repeating: false, count: 11)
     private let checkboxTitlesBeforeWedding = [
@@ -45,15 +44,13 @@ struct WitnessesView: View {
         "Beteiligung an der Brautentführung"
     ]
     
-    init(text: String) {
-        self.text = text
-    }
-    
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Ihr habt eure Trauzeugen gefunden? Jetzt geht es darum, gemeinsam mit ihnen die Planung eures großen Tages anzugehen! Hier sind einige ToDo‘s, damit nichts vergessen wird und die Trauzeugen wissen, welche Aufgaben auf sie zukommen:")
+                    .foregroundColor(.black)
+                    
                     SectionHeaderView(title: "Vor der Hochzeit", isExpanded: $section1Expanded)
                     if section1Expanded {
                         CheckboxListView(items: checkboxTitlesBeforeWedding, checkboxStates: $checkboxStatesBeforeWedding)
@@ -73,20 +70,30 @@ struct WitnessesView: View {
                     }
                     
                     Text("Liebes Brautpaar: Vergesst nicht: Es ist eure Hochzeit! Entscheidet, was ihr wollt, und sprecht euch gut mit euren Trauzeugen ab – dann kann nichts schiefgehen.")
+                        .foregroundColor(.black)
                 }.padding()
             }
             .onAppear{
                 checkboxStatesBeforeWedding = userModel.user?.checkboxStatesBeforeWedding ?? Array(repeating: false, count: 11)
                 checkboxStatesOnWeddingDay = userModel.user?.checkboxStatesOnWeddingDay ?? Array(repeating: false, count: 16)
             }
-            .swipeToDismiss()
-            .padding(.top, 35)
-            .overlay {
-                Toolbar(text: text, backAction: { self.goBack() })
+        }
+        .onTapGesture {
+            // Dismiss the keyboard when tapped outside the text fields
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        }
+        .swipeToDismiss()
+        .padding(.top, 10)
+        .navigationBarBackButtonHidden()
+        .navigationBarTitle("", displayMode: .inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                Toolbar(presentationMode: presentationMode, parentGeometry: parentGeometry, title: "Trauzeugen")
             }
         }
-        .navigationBarBackButtonHidden(true) // Hide the default back button.
-        .navigationBarHidden(true)
+        .foregroundColor(.white)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarBackground(Color(hex: 0x425C54), for: .navigationBar)
     }
     
     func goBack() {
@@ -94,15 +101,18 @@ struct WitnessesView: View {
     }
 }
 
-
 struct WitnessesView_Previews: PreviewProvider {
     static var previews: some View {
-        let dataManager = DataManager()
+        let userModel = UserViewModel()
         
-        WitnessesView(text: "Trauzeugen")
-            .environmentObject(dataManager)
+        return GeometryReader { geometry in
+            WitnessesView(parentGeometry: geometry)
+                .environmentObject(userModel)
+                .previewLayout(.fixed(width: 375, height: 1000))
+                .padding()
+                .background(Color.white)
+                .padding(.top, 50)
+        }
     }
 }
-
-
 

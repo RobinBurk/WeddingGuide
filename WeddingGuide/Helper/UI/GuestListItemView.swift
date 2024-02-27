@@ -9,8 +9,10 @@ struct GuestListItemView: View {
             VStack {
                 Text("Tisch")
                     .font(.custom("Lustria-Regular", size: 13))
+                    .foregroundColor(.black)
                 Text(String(guestListItem.tableNumber))
                     .font(.custom("Lustria-Regular", size: 13))
+                    .foregroundColor(.black)
             }
             
             Rectangle()
@@ -20,6 +22,7 @@ struct GuestListItemView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(guestListItem.familyName)
                     .font(.custom("Lustria-Regular", size: 18))
+                    .foregroundColor(.black)
                 Text("\(guestListItem.numberOfPeople) Personen")
                     .lineLimit(2)
                     .minimumScaleFactor(0.4)
@@ -31,13 +34,17 @@ struct GuestListItemView: View {
             Picker("", selection: $guestListItem.confirmationStatus) {
                 Text("Zugesagt").tag(ConfirmationStatus.confirmed)
                     .font(.custom("Lustria-Regular", size: 13))
+                    .foregroundColor(.black)
                 Text("Abgesagt").tag(ConfirmationStatus.declined)
                     .font(.custom("Lustria-Regular", size: 13))
+                    .foregroundColor(.black)
                 Text("Noch keine Antwort").tag(ConfirmationStatus.notResponded)
                     .font(.custom("Lustria-Regular", size: 13))
+                    .foregroundColor(.black)
             }
             .pickerStyle(MenuPickerStyle())
             .font(.custom("Lustria-Regular", size: 14))
+            .foregroundColor(.black)
             .colorMultiply(Color(hex: 0xB8C7B9))
             .colorMultiply(Color(hex: 0x800020))
             .colorMultiply(Color(hex: 0x999999))

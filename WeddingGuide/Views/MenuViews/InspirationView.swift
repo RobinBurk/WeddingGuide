@@ -7,6 +7,8 @@ struct InspirationView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var dataManager: DataManager
     
+    var columns:[GridItem] = [GridItem(.flexible()), GridItem(.flexible())]
+    var parentGeometry: GeometryProxy
     @State var selectedImage: String? = nil
     
     @State private var isLoadingImages = false
@@ -15,13 +17,6 @@ struct InspirationView: View {
     @State private var showAllImages3 : Bool = false
     @State private var showAllImages4 : Bool = false
     @State private var showAllImages5 : Bool = false
-    
-    var columns:[GridItem] = [GridItem(.flexible()), GridItem(.flexible())]
-    let text: String
-    
-    init(text: String) {
-        self.text = text
-    }
     
     var body: some View {
         NavigationView {
@@ -32,51 +27,6 @@ struct InspirationView: View {
                     InspirationCategoryView(categoryName: "Brautstrauß", showAllImages: { showAllImages3 = true }, imageUrls: dataManager.imageUrlsBrautstrauss, selectedImage: $selectedImage)
                     InspirationCategoryView(categoryName: "Frisuren", showAllImages: { showAllImages4 = true }, imageUrls: dataManager.imageUrlsFrisuren, selectedImage: $selectedImage)
                     InspirationCategoryView(categoryName: "Dekoration", showAllImages: { showAllImages5 = true }, imageUrls: dataManager.imageUrlsDekoration, selectedImage: $selectedImage)
-                }
-                .padding(.top)
-                .onAppear{
-                    isLoadingImages = true
-                    dataManager.loadImages(name: "images_anzug", appendAction: { url in
-                        dataManager.imageUrlsAnzug.append(url)
-                    }) { success, error in
-                        if success {
-                            dataManager.loadImages(name: "images_hochzeitskleid", appendAction: { url in
-                                dataManager.imageUrlsHochzeitskleid.append(url)
-                            }) { success, error in
-                                if success {
-                                    dataManager.loadImages(name: "images_brautstrauss", appendAction: { url in
-                                        dataManager.imageUrlsBrautstrauss.append(url)
-                                    }) { success, error in
-                                        if success {
-                                            dataManager.loadImages(name: "images_frisuren", appendAction: { url in
-                                                dataManager.imageUrlsFrisuren.append(url)
-                                            }) { success, error in
-                                                if success {
-                                                    dataManager.loadImages(name: "images_dekoration", appendAction: { url in
-                                                        dataManager.imageUrlsDekoration.append(url)
-                                                    }) { success, error in
-                                                        if success {
-                                                            
-                                                        } else {
-                                                            print("Error loading images: \(error)")
-                                                        }
-                                                    }
-                                                } else {
-                                                    print("Error loading images: \(error)")
-                                                }
-                                            }
-                                        } else {
-                                            print("Error loading images: \(error)")
-                                        }
-                                    }
-                                } else {
-                                    print("Error loading images: \(error)")
-                                }
-                            }
-                        } else {
-                            print("Error loading images: \(error)")
-                        }
-                    }
                 }
                 .fullScreenCover(isPresented: $showAllImages1){
                     AllImagesView(selectedImage: $selectedImage, images: dataManager.imageUrlsAnzug)
@@ -98,14 +48,68 @@ struct InspirationView: View {
                     BigImageView(selectedImage: $selectedImage).swipeToDismiss()
                 }
             }
-            .padding(.top, 35)
-            .overlay {
-                Toolbar(text: text, backAction: { self.goBack() })
-            }
-            .swipeToDismiss()
         }
-        .navigationBarBackButtonHidden(true) // Hide the default back button.
-        .navigationBarHidden(true)
+        
+        .onAppear{
+            isLoadingImages = true
+            dataManager.loadImages(name: "images_anzug", appendAction: { url in
+                dataManager.imageUrlsAnzug.append(url)
+            }) { success, error in
+                if success {
+                    dataManager.loadImages(name: "images_hochzeitskleid", appendAction: { url in
+                        dataManager.imageUrlsHochzeitskleid.append(url)
+                    }) { success, error in
+                        if success {
+                            dataManager.loadImages(name: "images_brautstrauss", appendAction: { url in
+                                dataManager.imageUrlsBrautstrauss.append(url)
+                            }) { success, error in
+                                if success {
+                                    dataManager.loadImages(name: "images_frisuren", appendAction: { url in
+                                        dataManager.imageUrlsFrisuren.append(url)
+                                    }) { success, error in
+                                        if success {
+                                            dataManager.loadImages(name: "images_dekoration", appendAction: { url in
+                                                dataManager.imageUrlsDekoration.append(url)
+                                            }) { success, error in
+                                                if success {
+                                                    
+                                                } else {
+                                                    print("Error loading images: \(error)")
+                                                }
+                                            }
+                                        } else {
+                                            print("Error loading images: \(error)")
+                                        }
+                                    }
+                                } else {
+                                    print("Error loading images: \(error)")
+                                }
+                            }
+                        } else {
+                            print("Error loading images: \(error)")
+                        }
+                    }
+                } else {
+                    print("Error loading images: \(error)")
+                }
+            }
+        }
+        .onTapGesture {
+            // Dismiss the keyboard when tapped outside the text fields.
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        }
+        .swipeToDismiss()
+        .padding(.top, 10)
+        .navigationBarBackButtonHidden()
+        .navigationBarTitle("", displayMode: .inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                Toolbar(presentationMode: presentationMode, parentGeometry: parentGeometry, title: "Inspiration")
+            }
+        }
+        .foregroundColor(.white)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarBackground(Color(hex: 0x425C54), for: .navigationBar)
     }
     
     func goBack() {
@@ -124,6 +128,7 @@ struct InspirationCategoryView: View {
             HStack {
                 Text(categoryName)
                     .font(.custom("Lustria-Regular", size: 16))
+                    .foregroundColor(.black)
                     .padding(.leading, 5)
                     .lineLimit(1)
                     .minimumScaleFactor(0.3)
@@ -213,6 +218,13 @@ struct AllImagesView: View {
 
 struct InspirationView_Previews: PreviewProvider {
     static var previews: some View {
-        InspirationView(text: "Inspiration").environmentObject(DataManager())
+        return GeometryReader { proxy in
+            InspirationView(parentGeometry: proxy)
+                .environmentObject(DataManager())
+                .previewLayout(.fixed(width: 375, height: 1000))
+                .padding()
+                .background(Color.white)
+                .padding(.top, 50)
+        }
     }
 }

@@ -5,7 +5,8 @@ struct InfoForPhotographView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var userModel: UserViewModel
     
-    let text: String
+    var parentGeometry: GeometryProxy
+    
     @State private var isKeyboardVisible = false
     @State var emailRecipient = "";
     @State var emailBody = "";
@@ -94,21 +95,31 @@ struct InfoForPhotographView: View {
             }
             .onDisappear {
                 userModel.update()
-            }.onTapGesture {
+            }
+            .onTapGesture {
                 // Dismiss the keyboard when tapped outside the text fields
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
             .alert(isPresented: $showAlert) {
                 Alert(title: Text(alertTitle), message: Text(alertMessage), dismissButton: .default(Text("OK")))
             }
-            .swipeToDismiss()
-            .padding(.top, 35)
         }
-        .overlay {
-            Toolbar(text: text, backAction: { self.goBack() })
+        .onTapGesture {
+            // Dismiss the keyboard when tapped outside the text fields.
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
-        .navigationBarBackButtonHidden(true)
-        .navigationBarHidden(true)
+        .swipeToDismiss()
+        .padding(.top, 10)
+        .navigationBarBackButtonHidden()
+        .navigationBarTitle("", displayMode: .inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                Toolbar(presentationMode: presentationMode, parentGeometry: parentGeometry, title: "Info's für Fotografen")
+            }
+        }
+        .foregroundColor(.white)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarBackground(Color(hex: 0x425C54), for: .navigationBar)
     }
     
     private func updateUser() {

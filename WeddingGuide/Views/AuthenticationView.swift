@@ -50,12 +50,14 @@ struct SignInView: View {
             VStack(spacing: 20) {
                 Text("WEDDING GUIDE")
                     .font(.custom("Lustria-Regular", size: 30))
+                    .foregroundColor(.black)
                     .padding()
                     .minimumScaleFactor(0.5)
                     .lineLimit(1)
                 
                 Text("Login")
                     .font(.custom("Lustria-Regular", size: 20))
+                    .foregroundColor(.black)
                     .padding(.top, -15)
                     .offset(y: -15)
                     .minimumScaleFactor(0.5)
@@ -181,12 +183,14 @@ struct SignUpView: View {
             VStack(spacing: 20) {
                 Text("WEDDING GUIDE")
                     .font(.custom("Lustria-Regular", size: 30))
+                    .foregroundColor(.black)
                     .padding()
                     .minimumScaleFactor(0.5)
                     .lineLimit(1)
                 
                 Text("Konto erstellen")
                     .font(.custom("Lustria-Regular", size: 20))
+                    .foregroundColor(.black)
                     .padding(.top, -15)
                     .offset(y: -15)
                     .minimumScaleFactor(0.5)

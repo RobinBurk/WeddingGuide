@@ -41,17 +41,20 @@ struct ChangeBudgetItem: View {
             
             Text(titleText)
                 .font(.custom("Lustria-Regular", size: 26))
+                .foregroundColor(.black)
             
             TextField("Beschreibung", text: $newItem.description)
                 .padding()
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .font(.custom("Lustria-Regular", size: 20))
+                .foregroundColor(.black)
             
             Picker("Typ", selection: $type) {
                 Text("Einkommen").tag(BudgetItemType.income).accentColor(Color(hex: 0xB8C7B9))
                 Text("Ausgabe").tag(BudgetItemType.expense).accentColor(Color(hex: 0x800020))
             }
             .font(.custom("Lustria-Regular", size: 14))
+            .foregroundColor(.black)
             .pickerStyle(SegmentedPickerStyle())
             .padding()
             

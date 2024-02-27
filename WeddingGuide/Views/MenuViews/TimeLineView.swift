@@ -4,6 +4,8 @@ struct TimeLineView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var userModel: UserViewModel
     
+    var parentGeometry: GeometryProxy
+    
     @State private var isAddTimeLineItemPresented = false
     @State private var newItemTitle = ""
     @State private var newItemStartTime = Date()
@@ -18,11 +20,11 @@ struct TimeLineView: View {
             VStack (alignment: .leading){
                 Spacer()
                 Text("Hochzeitstag: \(formattedWeddingDay())")
-                    .font(.custom("Lustria-Regular", size: 26))
+                    .font(.custom("Lustria-Regular", size: 20))
+                    .foregroundColor(.black)
                     .padding()
                     .lineLimit(1)
                     .minimumScaleFactor(0.4)
-                    .font(.custom("Lustria-Regular", size: 20))
                 
                 List {
                     ForEach(self.timeLineItems.indices, id: \.self) { index in
@@ -71,13 +73,13 @@ struct TimeLineView: View {
                     }
                     .padding(.top, 15)
                     .padding(.horizontal, 10)
-                    .padding(.bottom, -15)
+                    .padding(.bottom, parentGeometry.size.height * 0.02)
                     Spacer()
                 }
                 .background(Color(hex: 0xB8C7B9))
                 
                 NavigationLink(destination: ChangeTimeLineItem(
-                    mode: .edit, 
+                    mode: .edit,
                     index: rememberedIndexForEdit ?? 0,
                     items: userModel.user?.timeLineItems ?? []
                 ).onDisappear {
@@ -90,17 +92,22 @@ struct TimeLineView: View {
         .onAppear {
             timeLineItems = userModel.user?.timeLineItems ?? []
         }
-        .padding(.top, 35)
-        .overlay {
-            Toolbar(text: "Ablaufplan", backAction: { self.goBack() })
-        }
         .onTapGesture {
-            // Dismiss the keyboard when tapped outside the text fields
+            // Dismiss the keyboard when tapped outside the text fields.
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
         .swipeToDismiss()
-        .navigationBarBackButtonHidden(true)
-        .navigationBarHidden(true)
+        .padding(.top, 10)
+        .navigationBarBackButtonHidden()
+        .navigationBarTitle("", displayMode: .inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                Toolbar(presentationMode: presentationMode, parentGeometry: parentGeometry, title: "Ablaufplan")
+            }
+        }
+        .foregroundColor(.white)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarBackground(Color(hex: 0x425C54), for: .navigationBar)
     }
     
     private func deleteUserTimeLineItem(at index: Int) {

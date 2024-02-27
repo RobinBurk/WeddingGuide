@@ -1,15 +1,14 @@
 import SwiftUI
 
-struct PreparationView: View {
+struct GettingReadyView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var userModel : UserViewModel
+    
+    var parentGeometry: GeometryProxy
     
     @State private var section1Expanded = false
     @State private var section2Expanded = false
     @State private var section3Expanded = false
-    
-    private let text: String
-    
     @State private var checkboxStatesPreparationBride = Array(repeating: false, count: 6)
     private let checkboxTitlesPreparationBride = [
         "Schmuck (Kette, Ohrringe): Wähle deinen Lieblingsschmuck aus, der perfekt zu deinem Hochzeitskleid passt. Eine funkelnde Kette und elegante Ohrringe verleihen deinem Look einen Hauch von Glamour und lassen dich strahlen.",
@@ -27,10 +26,6 @@ struct PreparationView: View {
         "Einladungskarten & Ablaufplan: Halte auch die Einladungskarten und den Ablaufplan bereit, damit sie auf den Bildern und beim Gesamtkonzept nicht vergessen werden. Schließlich steckt auch hier viel Arbeit drin."
     ]
     
-    init(text: String) {
-        self.text = text
-    }
-    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -38,11 +33,13 @@ struct PreparationView: View {
                     SectionHeaderView(title: "ORT", isExpanded: $section1Expanded)
                     if section1Expanded {
                         Text("Das Getting Ready sollte an einem hellen und schönen Ort stattfinden. Am besten dort wo es eine Fensterfront gibt um dort das Tageslicht gut miteinbinden zu können.")
+                            .foregroundColor(.black)
                     }
                     
                     SectionHeaderView(title: "VORBEREITUNG BRAUT", isExpanded: $section2Expanded)
                     if section2Expanded {
                         Text("Mache Dir Gedanken, wer an deinem Getting Ready dabei sein soll. Überlege, welche Personen dir besonders nahestehen und mit denen du diesen besonderen Moment teilen möchtest. Vielleicht möchtest du deine Mutter dabeihaben, um dich zu unterstützen und dir emotional zur Seite zu stehen. Vielleicht möchtest du auch deine Trauzeugin oder enge Freundinnen einladen, um gemeinsam die Vorfreude und Aufregung zu teilen. Denke auch darüber nach, wie die Outfits aussehen sollen. Du könntest zum Beispiel einheitliche Bademäntel oder personalisierte T-Shirts für dein Team zusammenstellen, um ein Gefühl der Zusammengehörigkeit zu schaffen.\n\nUm die Atmosphäre während des Getting Ready noch angenehmer zu gestalten, könnt ihr auch sehr gerne Musik abspielen lassen. Überlege, welche Lieder und Melodien dir besonders am Herzen liegen und welche Stimmung du gerne während dieser besonderen Zeit haben möchtest. Musik kann eine wunderbare Möglichkeit sein, um entspannter und fröhlicher in den Tag zu starten.\n\nDenke daran, dass das Getting Ready ein wichtiger Teil deiner Hochzeit ist und du dich dabei wohlfühlen solltest. Plane daher im Voraus und bereite alles vor, damit du den Tag in vollen Zügen genießen kannst.\nDes Weiteren bitten wir dich, folgende Sachen für das Braut Getting Ready vorzubereiten:")
+                            .foregroundColor(.black)
                         
                         CheckboxListView(items: checkboxTitlesPreparationBride, checkboxStates: $checkboxStatesPreparationBride) {
                             userModel.user?.checkboxStatesPreparationBride = checkboxStatesPreparationBride
@@ -50,11 +47,13 @@ struct PreparationView: View {
                         }
                         
                         Text("Denke daran, dass das Getting Ready ein besonderer Moment ist, indem du dich verwöhnen und auf den großen Tag einstimmen kannst. Mit der richtigen Vorbereitung und den passenden Accessoires wird dieser Moment unvergesslich.")
+                            .foregroundColor(.black)
                     }
                     
                     SectionHeaderView(title: "VORBEREITUNG BRÄUTIGAM", isExpanded: $section3Expanded)
                     if section3Expanded {
                         Text("Bitte mache dir Gedanken, wer an deinem Bräutigam Getting Ready dabei sein sollte. Neben deinem Vater und deinem Bruder könntest du auch erwägen, einige enge Freunde einzuladen, um gemeinsam mit dir anzustoßen. Es wäre eine großartige Gelegenheit, sich mit einem Bier zu entspannen und in die richtige Stimmung zu kommen.\n\nUm dich wohlzufühlen, ist es natürlich gestattet, deine Lieblingsmusik abspielen zu lassen, um direkt in die richtige Atmosphäre einzutauchen. Wähle Lieder aus, die dir besonders am Herzen liegen und die dich in eine entspannte und fröhliche Stimmung versetzen.\n\nFür das Shooting während des Bräutigam Getting Ready solltest du folgende Sachen vorbereiten:")
+                            .foregroundColor(.black)
                         
                         CheckboxListView(items: checkboxTitlesPreparationGroom, checkboxStates: $checkboxStatesPreparationGroom)
                         {
@@ -63,6 +62,7 @@ struct PreparationView: View {
                         }
                         
                         Text("Denke daran, dass das Getting Ready ein besonderer Moment ist, indem du dich verwöhnen und auf den großen Tag einstimmen kannst. Mit der richtigen Vorbereitung und den passenden Accessoires wird dieser Moment unvergesslich.")
+                            .foregroundColor(.black)
                     }
                 }.padding()
             }
@@ -70,15 +70,23 @@ struct PreparationView: View {
                 checkboxStatesPreparationBride = userModel.user?.checkboxStatesPreparationBride ?? Array(repeating: false, count: 6)
                 checkboxStatesPreparationGroom = userModel.user?.checkboxStatesPreparationGroom ?? Array(repeating: false, count: 4)
             }
-            .swipeToDismiss()
-            .padding(.top, 35)
-            .overlay {
-                Toolbar(text: text, backAction: { self.goBack() })
-            }
-            
         }
-        .navigationBarBackButtonHidden(true)
-        .navigationBarHidden(true)
+        .onTapGesture {
+            // Dismiss the keyboard when tapped outside the text fields.
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        }
+        .swipeToDismiss()
+        .padding(.top, 10)
+        .navigationBarBackButtonHidden()
+        .navigationBarTitle("", displayMode: .inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                Toolbar(presentationMode: presentationMode, parentGeometry: parentGeometry, title: "Getting Ready")
+            }
+        }
+        .foregroundColor(.white)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarBackground(Color(hex: 0x425C54), for: .navigationBar)
     }
     
     func goBack() {

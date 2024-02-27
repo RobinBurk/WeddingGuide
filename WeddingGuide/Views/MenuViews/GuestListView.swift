@@ -4,6 +4,8 @@ struct GuestListView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var userModel: UserViewModel
     
+    var parentGeometry: GeometryProxy
+    
     @State private var isAddGuestListItemPresented = false
     @State private var guestListItems: [GuestListItem] = []
     @State private var changeGuestListItemIsActive = false
@@ -62,7 +64,7 @@ struct GuestListView: View {
                     }
                     .padding(.top, 15)
                     .padding(.horizontal, 10)
-                    .padding(.bottom, -15)
+                    .padding(.bottom, parentGeometry.size.height * 0.02)
                     Spacer()
                 }
                 .background(Color(hex: 0xB8C7B9))
@@ -79,19 +81,24 @@ struct GuestListView: View {
             }
         }
         .onAppear {
-            guestListItems = userModel.user?.guestListItems ?? []
-        }
-        .padding(.top, 35)
-        .overlay {
-            Toolbar(text: "Gästeliste", backAction: { self.goBack() })
+            guestListItems = userModel.user?.guestListItems.sorted(by: { $0.tableNumber < $1.tableNumber }) ?? []
         }
         .onTapGesture {
-            // Dismiss the keyboard when tapped outside the text fields
+            // Dismiss the keyboard when tapped outside the text fields.
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
         .swipeToDismiss()
-        .navigationBarBackButtonHidden(true)
-        .navigationBarHidden(true)
+        .padding(.top, 10)
+        .navigationBarBackButtonHidden()
+        .navigationBarTitle("", displayMode: .inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                Toolbar(presentationMode: presentationMode, parentGeometry: parentGeometry, title: "Gästeliste")
+            }
+        }
+        .foregroundColor(.white)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarBackground(Color(hex: 0x425C54), for: .navigationBar)
     }
     
     private func deleteGuestListLineItem(at index: Int) {
@@ -117,18 +124,36 @@ struct SummaryView: View {
             
             HStack {
                 VStack (alignment: .leading) {
-                    Text("Zugesagt").foregroundColor(Color(hex: 0x425C54))
-                    Text("\(confirmedCount) Personen").foregroundColor(Color(hex: 0x425C54))
+                    Text("Zugesagt")
+                        .foregroundColor(Color(hex: 0x425C54))
+                        .minimumScaleFactor(0.4)
+                        .lineLimit(1)
+                    Text("\(confirmedCount) Personen")
+                        .foregroundColor(Color(hex: 0x425C54))
+                        .minimumScaleFactor(0.4)
+                        .lineLimit(1)
                 }
                 Spacer()
                 VStack {
-                    Text("Abgesagt ").foregroundColor(Color(hex: 0x800020))
-                    Text("\(declinedCount) Personen").foregroundColor(Color(hex: 0x800020))
+                    Text("Abgesagt ")
+                        .foregroundColor(Color(hex: 0x800020))
+                        .minimumScaleFactor(0.4)
+                        .lineLimit(1)
+                    Text("\(declinedCount) Personen")
+                        .foregroundColor(Color(hex: 0x800020))
+                        .minimumScaleFactor(0.4)
+                        .lineLimit(1)
                 }
                 Spacer()
                 VStack (alignment: .trailing) {
-                    Text("Offen ").foregroundColor(Color(hex: 0x999999))
-                    Text("\(notRespondedCount) Personen").foregroundColor(Color(hex: 0x999999))
+                    Text("Offen ")
+                        .foregroundColor(Color(hex: 0x999999))
+                        .minimumScaleFactor(0.4)
+                        .lineLimit(1)
+                    Text("\(notRespondedCount) Personen")
+                        .foregroundColor(Color(hex: 0x999999))
+                        .minimumScaleFactor(0.4)
+                        .lineLimit(1)
                 }
             }
             .font(.custom("Lustria-Regular", size: 18))
@@ -222,34 +247,3 @@ enum ConfirmationStatus: String, Codable {
     case notResponded = "Noch keine Antwort"
 }
 
-struct GuestListView_Previews: PreviewProvider {
-    static var previews: some View {
-        let sampleItem1 = GuestListItem(
-            familyName: "Doe",
-            tableNumber: 1,
-            numberOfPeople: 3,
-            confirmationStatus: .confirmed
-        )
-        
-        let sampleItem2 = GuestListItem(
-            familyName: "Smith",
-            tableNumber: 2,
-            numberOfPeople: 2,
-            confirmationStatus: .declined
-        )
-        
-        let sampleItem3 = GuestListItem(
-            familyName: "Johnson",
-            tableNumber: 3,
-            numberOfPeople: 4,
-            confirmationStatus: .notResponded
-        )
-        
-        let userModel = UserViewModel()
-        userModel.user?.guestListItems = [sampleItem1, sampleItem2, sampleItem3]
-        
-        return GuestListView()
-            .environmentObject(userModel)
-            .previewDevice("iPhone 12 Pro")
-    }
-}

@@ -10,6 +10,7 @@ struct TypingAnimationView: View {
     var body: some View {
         Text(visibleText)
             .font(.custom("Lustria-Regular", size: 45))
+            .foregroundColor(.black)
             .padding()
             .minimumScaleFactor(0.5)
             .lineLimit(1)
