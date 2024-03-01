@@ -16,6 +16,10 @@ struct ChangeGuestListItem: View {
         self.mode = mode
         self._newItem = State(initialValue: GuestListItem())
         self.index = -1 // Set a default value for index, or you can make it optional
+        
+        print("xxnumberOfPeople: \(newItem.numberOfPeople)")
+        print("xxfamilyName: \(newItem.familyName)")
+        print("xxtableNumber: \(newItem.tableNumber)")
     }
     
     // Initializer for the edit mode
@@ -24,13 +28,15 @@ struct ChangeGuestListItem: View {
         self.index = index
         
         if index >= 0 && index < items.count {
-            self.index = index
             self._newItem = State(initialValue: items[index])
         } else {
             // Handle the case where index is out of range, set a default or handle it accordingly.
             self.index = -1
             self._newItem = State(initialValue: GuestListItem())
-        }
+        }  
+        print("numberOfPeople: \(newItem.numberOfPeople)")
+        print("familyName: \(newItem.familyName)")
+        print("tableNumber: \(newItem.tableNumber)")
     }
     
     var body: some View {

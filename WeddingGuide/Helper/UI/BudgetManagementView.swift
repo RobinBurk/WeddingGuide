@@ -16,140 +16,139 @@ struct BudgetManagementView: View {
     @State private var rememberedIndexForEdit: Int? = nil
     
     var body: some View {
-        NavigationView {
-            VStack(alignment: .leading) {
-                VStack(spacing: 10) {
-                    HStack (spacing: 10) {
-                        Text(NumberFormatter.localizedString(from: NSNumber(value: remainingBudget), number: .currency))
-                            .font(.custom("Lustria-Regular", size: 30))
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.5)
-                        
-                        Text("Verbleibend")
-                            .font(.custom("Lustria-Regular", size: 12))
-                            .foregroundColor(.white)
-                            .padding(5)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 5)
-                                    .stroke(Color.white, lineWidth: 1)
-                            )
-                        Spacer()
-                    }
+        VStack(alignment: .leading) {
+            VStack(spacing: 10) {
+                HStack (spacing: 10) {
+                    Text(NumberFormatter.localizedString(from: NSNumber(value: remainingBudget), number: .currency))
+                        .font(.custom("Lustria-Regular", size: 30))
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
                     
-                    ProgressBar(currentValue: startBudget - remainingBudget, maxValue: startBudget, firstColor: Color(hex: 0x425C54), secondColor: .white)
-                        .frame(height: 15)
-                    HStack (spacing: 0) {
-                        Text(NumberFormatter.localizedString(from: NSNumber(value: startBudget - remainingBudget), number: .currency))
-                            .font(.custom("Lustria-Regular", size: 14))
-                            .foregroundColor(.white)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.4)
-                            .fontWeight(.bold)
-                        Text(" von ")
-                            .font(.custom("Lustria-Regular", size: 13))
-                            .foregroundColor(.white)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.4)
-                        Text(NumberFormatter.localizedString(from: NSNumber(value: startBudget ), number: .currency))
-                            .font(.custom("Lustria-Regular", size: 14))
-                            .foregroundColor(.white)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.4)
-                            .fontWeight(.bold)
-                        Text(" verbraucht")
-                            .font(.custom("Lustria-Regular", size: 13))
-                            .foregroundColor(.white)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.4)
-                        Spacer()
-                    }
-                }
-                .padding()
-                .background(Color(hex: 0xB8C7B9))
-                
-                HStack {
-                    VStack (alignment: .leading){
-                        Text("Einkommen")
-                            .font(.custom("Lustria-Regular", size: 15))
-                            .foregroundColor(.black)
-                        Text(incomeText)
-                            .font(.custom("Lustria-Regular", size: 15))
-                            .foregroundColor(Color(hex: 0x425C54))
-                    }
+                    Text("Verbleibend")
+                        .font(.custom("Lustria-Regular", size: 12))
+                        .foregroundColor(.white)
+                        .padding(5)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(Color.white, lineWidth: 1)
+                        )
                     Spacer()
-                    VStack (alignment: .trailing) {
-                        Text("Ausgaben")
-                            .font(.custom("Lustria-Regular", size: 15))
-                            .foregroundColor(.black)
-                        Text(expenseText)
-                            .font(.custom("Lustria-Regular", size: 15))
-                            .foregroundColor(Color(hex: 0x990000))
-                    }
                 }
-                .padding(.horizontal, 10)
                 
-                List {
-                    ForEach(budgetItems.indices, id: \.self) { index in
-                        BudgetItemView(budgetItem: $budgetItems[index])
-                            .cornerRadius(8)
-                            .padding(5)
-                            .contextMenu {
-                                Button(action: {
-                                    rememberedIndexForEdit = index
-                                    changeBudgetItemIsActive.toggle()
-                                }) {
-                                    Label("Bearbeiten", systemImage: "pencil")
-                                }
-                                
-                                Button(action: {
-                                    deleteUserBudgetItem(at: index)
-                                }) {
-                                    Text("Löschen")
-                                    Image(systemName: "trash")
-                                }
-                            }
-                    }
-                    .onDelete { indexSet in
-                        userModel.user?.budgetItems.remove(atOffsets: indexSet)
-                        userModel.update()
-                        updateBudget()
-                    }
+                ProgressBar(currentValue: startBudget - remainingBudget, maxValue: startBudget, firstColor: Color(hex: 0x425C54), secondColor: .white)
+                    .frame(height: 15)
+                HStack (spacing: 0) {
+                    Text(NumberFormatter.localizedString(from: NSNumber(value: startBudget - remainingBudget), number: .currency))
+                        .font(.custom("Lustria-Regular", size: 14))
+                        .foregroundColor(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.4)
+                        .fontWeight(.bold)
+                    Text(" von ")
+                        .font(.custom("Lustria-Regular", size: 13))
+                        .foregroundColor(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.4)
+                    Text(NumberFormatter.localizedString(from: NSNumber(value: startBudget), number: .currency))
+                        .font(.custom("Lustria-Regular", size: 14))
+                        .foregroundColor(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.4)
+                        .fontWeight(.bold)
+                    Text(" verbraucht")
+                        .font(.custom("Lustria-Regular", size: 13))
+                        .foregroundColor(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.4)
+                    Spacer()
                 }
-                .highPriorityGesture(DragGesture())
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .shadow(color: Color.gray.opacity(0.8), radius: 3, x: 0, y: 2)
-                .scrollContentBackground(.hidden)
-                
+            }
+            .padding()
+            .background(Color(hex: 0xB8C7B9))
+            
+            HStack {
+                VStack (alignment: .leading){
+                    Text("Einkommen")
+                        .font(.custom("Lustria-Regular", size: 15))
+                        .foregroundColor(.black)
+                    Text(incomeText)
+                        .font(.custom("Lustria-Regular", size: 15))
+                        .foregroundColor(Color(hex: 0x425C54))
+                }
                 Spacer()
-                
-                HStack{
-                    Spacer()
-                    NavigationLink(destination: ChangeBudgetItem(mode: Mode.add).onDisappear {
+                VStack (alignment: .trailing) {
+                    Text("Ausgaben")
+                        .font(.custom("Lustria-Regular", size: 15))
+                        .foregroundColor(.black)
+                    Text(expenseText)
+                        .font(.custom("Lustria-Regular", size: 15))
+                        .foregroundColor(Color(hex: 0x990000))
+                }
+            }
+            .padding(.horizontal, 10)
+            
+            List {
+                ForEach(budgetItems.indices, id: \.self) { index in
+                    BudgetItemView(budgetItem: $budgetItems[index], parent: self)
+                        .cornerRadius(8)
+                        .padding(5)
+                        .contextMenu {
+                            Button(action: {
+                                rememberedIndexForEdit = index
+                                changeBudgetItemIsActive.toggle()
+                            }) {
+                                Label("Bearbeiten", systemImage: "pencil")
+                            }
+                            
+                            Button(action: {
+                                deleteUserBudgetItem(at: index)
+                            }) {
+                                Text("Löschen")
+                                Image(systemName: "trash")
+                            }
+                        }
+                }
+                .onDelete { indexSet in
+                    userModel.user?.budgetItems.remove(atOffsets: indexSet)
+                    userModel.update()
+                    updateBudget()
+                }
+            }
+            .highPriorityGesture(DragGesture())
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .shadow(color: Color.gray.opacity(0.8), radius: 3, x: 0, y: 2)
+            .scrollContentBackground(.hidden)
+            
+            Spacer()
+            
+            HStack{
+                Spacer()
+                NavigationLink(destination: ChangeBudgetItem(mode: Mode.add)
+                    .onDisappear {
                         updateBudget()
                     }
-                    ) {
-                        Label("", systemImage: "plus.circle")
-                            .font(.custom("Lustria-Regular", size: 30))
-                            .foregroundColor(Color(hex: 0x425C54))
-                    }
-                    .padding(.top, 15)
-                    .padding(.horizontal, 10)
-                    .padding(.bottom, parentGeometry.size.height * 0.02)
-                    Spacer()
-                    
-                    NavigationLink(destination: ChangeBudgetItem(
-                        mode: .edit,
-                        index: rememberedIndexForEdit ?? 0,
-                        items: userModel.user?.budgetItems ?? []
-                    ).onDisappear {
-                        budgetItems = userModel.user?.budgetItems ?? []
-                    }, isActive: $changeBudgetItemIsActive) {
-                        EmptyView()
-                    }
+                ) {
+                    Label("", systemImage: "plus.circle")
+                        .font(.custom("Lustria-Regular", size: 30))
+                        .foregroundColor(Color(hex: 0x425C54))
                 }
-                .background(Color(hex: 0xB8C7B9))
+                .padding(.top, 15)
+                .padding(.horizontal, 10)
+                .padding(.bottom, parentGeometry.size.height * 0.02)
+                Spacer()
+            }
+            .background(Color(hex: 0xB8C7B9))
+            
+            NavigationLink(destination: ChangeBudgetItem(
+                mode: .edit,
+                index: rememberedIndexForEdit ?? 0,
+                items: userModel.user?.budgetItems ?? []
+            ).onDisappear {
+                budgetItems = userModel.user?.budgetItems ?? []
+            }, isActive: $changeBudgetItemIsActive) {
+                EmptyView()
             }
         }
         .onAppear {
@@ -180,7 +179,7 @@ struct BudgetManagementView: View {
         }
     }
     
-    private func updateBudget() {
+    func updateBudget() {
         startBudget = userModel.user?.startBudget ?? 0.0
         budgetItems = userModel.user?.budgetItems ?? []
         
@@ -252,13 +251,6 @@ struct BudgetItem: Identifiable, Codable {
     var type: BudgetItemType
     var amount: Double
     
-    enum CodingKeys: String, CodingKey {
-        case id
-        case description
-        case type
-        case amount
-    }
-    
     init(
         id: UUID = UUID(),
         description: String = "",
@@ -269,6 +261,13 @@ struct BudgetItem: Identifiable, Codable {
         self.description = description
         self.type = type
         self.amount = amount
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case description
+        case type
+        case amount
     }
 }
 

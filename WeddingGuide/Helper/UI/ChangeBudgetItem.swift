@@ -5,10 +5,8 @@ struct ChangeBudgetItem: View {
     @EnvironmentObject var userModel: UserViewModel
     
     @State private var newItem: BudgetItem = BudgetItem()
-    @State private var type: BudgetItemType = .income
     @State private var showAlert = false
     @State private var alertMessage = ""
-    @State private var amountText = ""
     
     var mode: Mode
     var index: Int
@@ -18,6 +16,10 @@ struct ChangeBudgetItem: View {
         self.mode = mode
         self._newItem = State(initialValue: BudgetItem())
         self.index = -1 // Set a default value for index, or you can make it optional
+        
+        print("XXDescription: \(newItem.description)")
+        print("XXType: \(newItem.type)")
+        print("XXAmount: \(newItem.amount)")
     }
     
     // Initializer for the edit mode
@@ -26,13 +28,16 @@ struct ChangeBudgetItem: View {
         self.index = index
         
         if index >= 0 && index < items.count {
-            self.index = index
             self._newItem = State(initialValue: items[index])
         } else {
             // Handle the case where index is out of range, set a default or handle it accordingly.
             self.index = -1
             self._newItem = State(initialValue: BudgetItem())
         }
+        
+        print("Description: \(newItem.description)")
+        print("Type: \(newItem.type)")
+        print("Amount: \(newItem.amount)")
     }
     
     var body: some View {
@@ -42,28 +47,45 @@ struct ChangeBudgetItem: View {
             Text(titleText)
                 .font(.custom("Lustria-Regular", size: 26))
                 .foregroundColor(.black)
-            
+           
             TextField("Beschreibung", text: $newItem.description)
-                .padding()
-                .textFieldStyle(RoundedBorderTextFieldStyle())
                 .font(.custom("Lustria-Regular", size: 20))
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding()
                 .foregroundColor(.black)
             
-            Picker("Typ", selection: $type) {
-                Text("Einkommen").tag(BudgetItemType.income).accentColor(Color(hex: 0xB8C7B9))
-                Text("Ausgabe").tag(BudgetItemType.expense).accentColor(Color(hex: 0x800020))
+            HStack {
+                Text("Typ")
+                    .font(.custom("Lustria-Regular", size: 20))
+                    .foregroundColor(.black)
+                
+                Spacer()
+                
+                Picker("Typ", selection: $newItem.type) {
+                    Text("Einkommen").tag(BudgetItemType.income)
+                    Text("Ausgabe").tag(BudgetItemType.expense)
+                }
+                .accentColor(.black)
+                .font(.custom("Lustria-Regular", size: 20))
+                .foregroundColor(.black)
+                .pickerStyle(.menu)
             }
-            .font(.custom("Lustria-Regular", size: 14))
-            .foregroundColor(.black)
-            .pickerStyle(SegmentedPickerStyle())
             .padding()
             
-            TextField("Betrag", text: $amountText)
-                .font(.custom("Lustria-Regular", size: 14))
+            TextField("Betrag", text: Binding<String>(
+                get: { "\(newItem.amount)" },
+                set: {
+                    // Attempt to convert the entered text to an integer
+                    if let amount = Double($0) {
+                        newItem.amount = amount
+                    }
+                })
+            )
+                .font(.custom("Lustria-Regular", size: 20))
+                .textFieldStyle(RoundedBorderTextFieldStyle())
                 .keyboardType(.decimalPad)
                 .padding()
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .foregroundColor(type == .expense ? Color(hex: 0x990000) : Color(hex: 0x425C54))
+                .foregroundColor(newItem.type == .expense ? Color(hex: 0x990000) : Color(hex: 0x425C54))
             
             Button(action: {
                 // Check if the description is empty.
@@ -74,10 +96,7 @@ struct ChangeBudgetItem: View {
                 }
                 
                 // Try to convert amountText to double.
-                if let amount = Double(amountText), amount > 0 {
-                    newItem.amount = amount
-                    newItem.type = type
-                   
+                if newItem.amount > 0 {
                     if mode == Mode.add {
                         DispatchQueue.main.async {
                             userModel.user?.budgetItems.append(newItem)
@@ -88,7 +107,7 @@ struct ChangeBudgetItem: View {
                     
                     if mode == Mode.edit {
                         DispatchQueue.main.async {
-                            userModel.user?.budgetItems[index] = newItem // Update the existing item
+                            userModel.user?.budgetItems[index] = newItem
                             userModel.update()
                             print("Temporary updated item description: \(newItem.description), amount: \(newItem.amount)")
                         }
@@ -106,8 +125,7 @@ struct ChangeBudgetItem: View {
                     Text(actionButtonText)
                         .font(.custom("Lustria-Regular", size: 18))
                 }
-                .frame(width: 320)
-                .font(.headline)
+                .frame(width: 300)
                 .padding()
                 .foregroundColor(.white)
                 .background(Color(hex: 0x425C54))
@@ -130,8 +148,7 @@ struct ChangeBudgetItem: View {
                     Text("ABBRECHEN")
                         .font(.custom("Lustria-Regular", size: 18))
                 }
-                .frame(width: 320)
-                .font(.headline)
+                .frame(width: 300)
                 .padding()
                 .foregroundColor(.white)
                 .background(Color.gray)
@@ -143,10 +160,11 @@ struct ChangeBudgetItem: View {
             Spacer()
         }
         .onAppear {
-            // Reset new item.
-            newItem.description = ""
-            newItem.amount = 0
-            amountText = ""
+            if mode == .add {
+                // Reset new item.
+                newItem.description = ""
+                newItem.amount = 0
+            }
         }
         .navigationBarBackButtonHidden(true)
         .navigationBarHidden(true)

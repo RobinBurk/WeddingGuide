@@ -3,6 +3,7 @@ import SwiftUI
 struct BudgetItemView: View {
     @EnvironmentObject var userModel: UserViewModel
     @Binding var budgetItem: BudgetItem
+    var parent : BudgetManagementView
     
     var body: some View {
         HStack(alignment: .center, spacing: 20) {
@@ -33,6 +34,7 @@ struct BudgetItemView: View {
                 if let index = userModel.user?.budgetItems.firstIndex(where: { $0.id == budgetItem.id }) {
                     userModel.user?.budgetItems[index].type = budgetItem.type
                     userModel.update()
+                    parent.updateBudget()
                 }
             }
         }

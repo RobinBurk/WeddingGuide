@@ -65,6 +65,7 @@ struct ProfileView: View {
                 }
                 Button("Abbrechen", role: .cancel) { }
             }
+            .preferredColorScheme(.light)
             .alert("Error", isPresented: $showStartCodeErrorDialog) {
                 Text("Das hat nicht geklappt. Fehler: \(startCodeErrorMessage)")
             }
@@ -105,7 +106,6 @@ struct ProfileView: View {
         .foregroundColor(.white)
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarBackground(Color(hex: 0x425C54), for: .navigationBar)
-        
     }
     
     func goBack() {

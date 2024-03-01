@@ -6,7 +6,6 @@ import UIKit
 struct WeddingGuideApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
-    @StateObject var networkMonitor = NetworkMonitor()
     @StateObject private var userModel = UserViewModel()
     @StateObject private var dataManager = DataManager()
     @StateObject private var storeKitManager = StoreKitManager()
@@ -17,7 +16,6 @@ struct WeddingGuideApp: App {
                 .preferredColorScheme(.light)
                 .environmentObject(userModel)
                 .environmentObject(dataManager)
-                .environmentObject(networkMonitor)
                 .environmentObject(storeKitManager)
         }
     }

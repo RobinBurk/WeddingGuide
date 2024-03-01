@@ -12,33 +12,33 @@ struct ChangeStartBudget: View {
     var body: some View {
         VStack(spacing: 20) {
             HStack {
-                           Spacer().frame(width: 60)
-                           ZStack {
-                               RoundedRectangle(cornerRadius: 10)
-                                   .foregroundColor(Color(hex: 0xB8C7B9)) // Background color
-                                   .padding(.horizontal, 10) // Adjust padding as needed
-                               
-                               TextField("Startbudget", text: $startBudgetFormatted)
-                                   .textFieldStyle(PlainTextFieldStyle())
-                                   .font(.custom("Lustria-Regular", size: 30))
-                                   .foregroundColor(.white)
-                                   .padding(.horizontal, 20) // Adjust padding as needed
-                                   .keyboardType(.numberPad)
-                                   .onChange(of: startBudgetFormatted, perform: { value in
-                                       // Format the input to include dots every three characters.
-                                       let filtered = value.filter { "0123456789".contains($0) }
-                                       startBudgetFormatted = formatBudgetText(filtered)
-                                       newStartBudget = Double(filtered) ?? 0
-                                   })
-                           }
-                           .frame(height: 60) // Adjust height as needed
-                           .cornerRadius(10) // Match the corner radius with the RoundedRectangle
-                           Text("€")
-                               .font(.custom("Lustria-Regular", size: 30))
-                               .foregroundColor(.black)
-                               .padding()
-                           Spacer().frame(width: 60)
-                       }
+                Spacer().frame(width: 60)
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .foregroundColor(Color(hex: 0xB8C7B9)) // Background color
+                        .padding(.horizontal, 10) // Adjust padding as needed
+                    
+                    TextField("Startbudget", text: $startBudgetFormatted)
+                        .textFieldStyle(PlainTextFieldStyle())
+                        .font(.custom("Lustria-Regular", size: 30))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 20) // Adjust padding as needed
+                        .keyboardType(.numberPad)
+                        .onChange(of: startBudgetFormatted, perform: { value in
+                            // Format the input to include dots every three characters.
+                            let filtered = value.filter { "0123456789".contains($0) }
+                            startBudgetFormatted = formatBudgetText(filtered)
+                            newStartBudget = Double(filtered) ?? 0
+                        })
+                }
+                .frame(height: 60) // Adjust height as needed
+                .cornerRadius(10) // Match the corner radius with the RoundedRectangle
+                Text("€")
+                    .font(.custom("Lustria-Regular", size: 30))
+                    .foregroundColor(.black)
+                    .padding()
+                Spacer().frame(width: 60)
+            }
             
             Button(action: {
                 userModel.user?.startBudget = Double(newStartBudget)

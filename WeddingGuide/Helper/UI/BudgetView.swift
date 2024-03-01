@@ -23,7 +23,7 @@ struct BudgetView: View {
                 .shadow(radius: 10)
             
             Circle()
-                .trim(from: 0.0, to: 0.5)
+                .trim(from: 0.0, to: trimValue)
                 .stroke(Color(hex: 0x425C54), lineWidth: height * 0.1)
                 .frame(width: height - height * 0.1, height: height)
                 .rotationEffect(.degrees(-90))

@@ -11,7 +11,6 @@ struct PreHomeView: View {
     @State private var showWeddingDay = true
     @State private var showStartBudget = false
     @State private var showAllFinished = false
-    @State private var showNetworkAlert = false
     @State private var isLoggedIn = false
     
     var body: some View {
@@ -159,10 +158,8 @@ struct PreHomeView: View {
 struct PreHomeview_Previews: PreviewProvider {
     static var previews: some View {
         let dataManager = DataManager()
-        let networkMonitor = NetworkMonitor()
         
         return PreHomeView()
             .environmentObject(dataManager)
-            .environmentObject(networkMonitor)
     }
 }

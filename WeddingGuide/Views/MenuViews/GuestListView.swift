@@ -12,76 +12,80 @@ struct GuestListView: View {
     @State private var rememberedIndexForEdit: Int? = nil
     
     var body: some View {
-        NavigationView {
-            VStack(alignment: .leading) {
-                SummaryView(guestListItems: guestListItems)
-                    .padding(.top, 15)
-                    .padding(.horizontal)
-                
-                List {
-                    ForEach(self.guestListItems.indices, id: \.self) { index in
-                        GuestListItemView(guestListItem: $guestListItems[index])
-                            .cornerRadius(8)
-                            .padding(5)
-                            .contextMenu {
-                                Button(action: {
-                                    rememberedIndexForEdit = index
-                                    changeGuestListItemIsActive.toggle()
-                                }) {
-                                    Label("Bearbeiten", systemImage: "pencil")
-                                }
-                                
-                                Button(action: {
-                                    deleteGuestListLineItem(at: index)
-                                }) {
-                                    Label("Löschen", systemImage: "trash")
-                                }
+        VStack(alignment: .leading) {
+            SummaryView(guestListItems: guestListItems)
+                .padding(.top, 15)
+                .padding(.horizontal)
+            
+            List {
+                ForEach(self.guestListItems.indices, id: \.self) { index in
+                    GuestListItemView(guestListItem: $guestListItems[index])
+                        .cornerRadius(8)
+                        .padding(5)
+                        .contextMenu {
+                            Button(action: {
+                                rememberedIndexForEdit = index
+                                changeGuestListItemIsActive.toggle()
+                            }) {
+                                Label("Bearbeiten", systemImage: "pencil")
                             }
-                    }
-                    .onDelete { indexSet in
-                        DispatchQueue.main.async {
-                            userModel.user?.guestListItems.remove(atOffsets: indexSet)
-                            userModel.update()
-                            guestListItems = userModel.user?.guestListItems ?? []
+                            
+                            Button(action: {
+                                deleteGuestListLineItem(at: index)
+                            }) {
+                                Label("Löschen", systemImage: "trash")
+                            }
                         }
+                }
+                .onDelete { indexSet in
+                    DispatchQueue.main.async {
+                        userModel.user?.guestListItems.remove(atOffsets: indexSet)
+                        userModel.user?.guestListItems.sort(by: { $0.tableNumber < $1.tableNumber })
+                        userModel.update()
+                        guestListItems = userModel.user?.guestListItems ?? []
                     }
                 }
-                .highPriorityGesture(DragGesture())
-                .shadow(color: Color.gray.opacity(0.8), radius: 3, x: 0, y: 2)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .scrollContentBackground(.hidden)
-                
+            }
+            .highPriorityGesture(DragGesture())
+            .shadow(color: Color.gray.opacity(0.8), radius: 3, x: 0, y: 2)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .scrollContentBackground(.hidden)
+            
+            Spacer()
+            
+            HStack{
                 Spacer()
-                
-                HStack{
-                    Spacer()
-                    NavigationLink(destination: ChangeGuestListItem(mode: .add ).onDisappear {
-                        guestListItems = userModel.user?.guestListItems ?? []}
-                    ) {
-                        Label("", systemImage: "plus.circle")
-                            .font(.custom("Lustria-Regular", size: 30))
-                            .foregroundColor(Color(hex: 0x425C54))
+                NavigationLink(destination: ChangeGuestListItem(mode: .add)
+                    .onDisappear {
+                        userModel.user?.guestListItems.sort(by: { $0.tableNumber < $1.tableNumber })
+                        guestListItems = userModel.user?.guestListItems ?? []
                     }
-                    .padding(.top, 15)
-                    .padding(.horizontal, 10)
-                    .padding(.bottom, parentGeometry.size.height * 0.02)
-                    Spacer()
+                ) {
+                    Label("", systemImage: "plus.circle")
+                        .font(.custom("Lustria-Regular", size: 30))
+                        .foregroundColor(Color(hex: 0x425C54))
                 }
-                .background(Color(hex: 0xB8C7B9))
-                
-                NavigationLink(destination: ChangeGuestListItem(
-                    mode: .edit,
-                    index: rememberedIndexForEdit ?? 0,
-                    items: userModel.user?.guestListItems ?? []
-                ).onDisappear {
-                    guestListItems = userModel.user?.guestListItems ?? []
-                }, isActive: $changeGuestListItemIsActive) {
-                    EmptyView()
-                }
+                .padding(.top, 15)
+                .padding(.horizontal, 10)
+                .padding(.bottom, parentGeometry.size.height * 0.02)
+                Spacer()
+            }
+            .background(Color(hex: 0xB8C7B9))
+            
+            NavigationLink(destination: ChangeGuestListItem(
+                mode: .edit,
+                index: rememberedIndexForEdit ?? 0,
+                items: userModel.user?.guestListItems ?? []
+            ).onDisappear {
+                userModel.user?.guestListItems.sort(by: { $0.tableNumber < $1.tableNumber })
+                guestListItems = userModel.user?.guestListItems ?? []
+            }, isActive: $changeGuestListItemIsActive) {
+                EmptyView()
             }
         }
         .onAppear {
-            guestListItems = userModel.user?.guestListItems.sorted(by: { $0.tableNumber < $1.tableNumber }) ?? []
+            userModel.user?.guestListItems.sort(by: { $0.tableNumber < $1.tableNumber })
+            guestListItems = userModel.user?.guestListItems ?? []
         }
         .onTapGesture {
             // Dismiss the keyboard when tapped outside the text fields.
@@ -104,6 +108,7 @@ struct GuestListView: View {
     private func deleteGuestListLineItem(at index: Int) {
         DispatchQueue.main.async {
             userModel.user?.guestListItems.remove(at: index)
+            userModel.user?.guestListItems.sort(by: { $0.tableNumber < $1.tableNumber })
             userModel.update()
             guestListItems = userModel.user?.guestListItems ?? []
         }
@@ -246,4 +251,3 @@ enum ConfirmationStatus: String, Codable {
     case declined = "Abgesagt"
     case notResponded = "Noch keine Antwort"
 }
-

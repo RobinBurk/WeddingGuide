@@ -17,7 +17,7 @@ struct ChangeTimeLineItem: View {
     init(mode: Mode) {
         self.mode = mode
         self._newItem = State(initialValue: TimeLineItem())
-        self.index = -1 // Set a default value for index, or you can make it optional
+        self.index = -1
     }
     
     // Initializer for the edit mode
@@ -88,6 +88,7 @@ struct ChangeTimeLineItem: View {
                     
                     DispatchQueue.main.async {
                         userModel.user?.timeLineItems.append(newItem)
+                        userModel.user?.timeLineItems.sort(by: { $0.startTime < $1.startTime })
                         userModel.update()
                         print("Temporary new item title: \(newItem.title)")
                     }
@@ -97,7 +98,8 @@ struct ChangeTimeLineItem: View {
                     print("Changed new item \(newItem.title)")
                     
                     DispatchQueue.main.async {
-                        userModel.user?.timeLineItems[index] = newItem // Update the existing item
+                        userModel.user?.timeLineItems[index] = newItem
+                        userModel.user?.timeLineItems.sort(by: { $0.startTime < $1.startTime })
                         userModel.update()
                         print("Temporary updated item title: \(newItem.title)")
                     }
@@ -144,28 +146,35 @@ struct ChangeTimeLineItem: View {
             Spacer()
         }
         .onAppear {
-            // Set the start time to the end time of the last item in the list.
-            if let lastItem = userModel.user?.timeLineItems.last {
-                var lastItemDate: Date
-                
-                if lastItem.endTime == 0 {
-                    lastItemDate = Calendar.current.date(bySettingHour: lastItem.startTime / 60, minute: lastItem.startTime % 60, second: 0, of: Date()) ?? Date()
-                } else {
-                    lastItemDate = Calendar.current.date(bySettingHour: lastItem.endTime / 60, minute: lastItem.endTime % 60, second: 0, of: Date()) ?? Date()
+            if mode == Mode.add {
+                // Set the start time to the end time of the last item in the list.
+                if let lastItem = userModel.user?.timeLineItems.last {
+                    var lastItemDate: Date
+                    
+                    if lastItem.endTime == 0 {
+                        lastItemDate = Calendar.current.date(bySettingHour: lastItem.startTime / 60, minute: lastItem.startTime % 60, second: 0, of: Date()) ?? Date()
+                    } else {
+                        lastItemDate = Calendar.current.date(bySettingHour: lastItem.endTime / 60, minute: lastItem.endTime % 60, second: 0, of: Date()) ?? Date()
+                    }
+                    
+                    startTime = lastItemDate
+                    updateStartTime(lastItemDate)
+                    
+                    // Set the end time to start time + 1 hour, or use start time if end time is 0.
+                    let newEndDate = lastItem.endTime != 0 ?
+                    Calendar.current.date(byAdding: .hour, value: 1, to: lastItemDate) ?? lastItemDate :
+                    lastItemDate
+                    
+                    endTime = newEndDate
+                    updateEndTime(newEndDate)
                 }
-                
-                startTime = lastItemDate
-                updateStartTime(lastItemDate)
-                
-                // Set the end time to start time + 1 hour, or use start time if end time is 0.
-                let newEndDate = lastItem.endTime != 0 ?
-                Calendar.current.date(byAdding: .hour, value: 1, to: lastItemDate) ?? lastItemDate :
-                lastItemDate
-                
-                endTime = newEndDate
-                updateEndTime(newEndDate)
             }
         }
+        .onTapGesture {
+            // Dismiss the keyboard when tapped outside the text fields.
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        }
+        .swipeToDismiss()
         .navigationBarBackButtonHidden(true)
         .navigationBarHidden(true)
         .padding()

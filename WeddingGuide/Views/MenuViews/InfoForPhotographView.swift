@@ -29,55 +29,53 @@ struct InfoForPhotographView: View {
     @State private var additionalInfo = ""
     
     var body: some View {
-        NavigationView {
-            ScrollView {
-                ZStack {
-                    VStack(alignment: .leading, spacing: 16) {
-                        createSectionWithTitle("Hochzeitsmotto oder roter Faden", text: $weddingMotto, hint: "")
-                        createSectionWithTitle("Dresscode", text: $dressCode, hint: "Alles in weiß")
-                        createSectionWithTitle("Wichtiges für euch zum Fotografieren", text: $importantDetails, hint: "Dekoelemente")
-                        createSectionWithTitle("Adresse für die Trauung", text: $addressWedding, hint: "")
-                        createSectionWithTitle("Adresse für die Festlocation", text: $addressParty, hint: "")
-                        createSectionWithTitle("Namen des Brautpaares", text: $namePrideAndGrum, hint: "")
-                        createSectionWithTitle("Namen der Trauzeugen + Telefonnummer", text: $nameWitnesses, hint: "")
-                        createSectionWithTitle("Namen der Kinder", text: $nameChilds, hint: "")
-                        createSectionWithTitle("Zukünftiger Familienname", text: $nameFamiliy, hint: "")
-                        createSectionWithTitle("Gewünschte Gruppenbilder-Konstelationen", text: $groupPicturesList, hint: "Familie, Fußballmannschaft, Freundinen")
-                        createSectionWithTitle("Geplante Aktionen", text: $plannedActions, hint: "Spalier, Rituale, Spiele, Überraschungen")
-                        createSectionWithTitle("Weitere wichtige Informationen", text: $additionalInfo, hint: "")
-                        
-                        HStack {
-                            Button("Senden an Jovi") {
-                                updateUser()
-                                sendEmail(recipient: "kwickshot@gmx.de", subject: "WeddingGuide - Neue Informationen | \(userModel.user?.lastName ?? "tempLastName")")
-                            }
-                            .disabled(!MFMailComposeViewController.canSendMail())
-                            .padding()
-                            .font(.custom("Lustria-Regular", size: 18))
-                            .background(Color(hex: 0x425C54))
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                            .minimumScaleFactor(0.5)
-                            .lineLimit(1)
-                            .frame(maxWidth: .infinity)
-                            
-                            Button("Senden an Julia") {
-                                updateUser()
-                                sendEmail(recipient: "julia_krause_fotografie@web.de", subject: "WeddingGuide - Neue Informationen | \(userModel.user?.lastName ?? "tempLastName")")
-                            }
-                            .disabled(!MFMailComposeViewController.canSendMail())
-                            .padding()
-                            .font(.custom("Lustria-Regular", size: 18))
-                            .background(Color(hex: 0x425C54))
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                            .minimumScaleFactor(0.5)
-                            .lineLimit(1)
-                            .frame(maxWidth: .infinity)
+        ScrollView {
+            ZStack {
+                VStack(alignment: .leading, spacing: 16) {
+                    createSectionWithTitle("Hochzeitsmotto oder roter Faden", text: $weddingMotto, hint: "")
+                    createSectionWithTitle("Dresscode", text: $dressCode, hint: "Alles in weiß")
+                    createSectionWithTitle("Wichtiges für euch zum Fotografieren", text: $importantDetails, hint: "Dekoelemente")
+                    createSectionWithTitle("Adresse für die Trauung", text: $addressWedding, hint: "")
+                    createSectionWithTitle("Adresse für die Festlocation", text: $addressParty, hint: "")
+                    createSectionWithTitle("Namen des Brautpaares", text: $namePrideAndGrum, hint: "")
+                    createSectionWithTitle("Namen der Trauzeugen + Telefonnummer", text: $nameWitnesses, hint: "")
+                    createSectionWithTitle("Namen der Kinder", text: $nameChilds, hint: "")
+                    createSectionWithTitle("Zukünftiger Familienname", text: $nameFamiliy, hint: "")
+                    createSectionWithTitle("Gewünschte Gruppenbilder-Konstelationen", text: $groupPicturesList, hint: "Familie, Fußballmannschaft, Freundinen")
+                    createSectionWithTitle("Geplante Aktionen", text: $plannedActions, hint: "Spalier, Rituale, Spiele, Überraschungen")
+                    createSectionWithTitle("Weitere wichtige Informationen", text: $additionalInfo, hint: "")
+                    
+                    HStack {
+                        Button("Senden an Jovi") {
+                            updateUser()
+                            sendEmail(recipient: "kwickshot@gmx.de", subject: "WeddingGuide - Neue Informationen | \(userModel.user?.lastName ?? "tempLastName")")
                         }
+                        .disabled(!MFMailComposeViewController.canSendMail())
+                        .padding()
+                        .font(.custom("Lustria-Regular", size: 18))
+                        .background(Color(hex: 0x425C54))
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .minimumScaleFactor(0.5)
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity)
+                        
+                        Button("Senden an Julia") {
+                            updateUser()
+                            sendEmail(recipient: "julia_krause_fotografie@web.de", subject: "WeddingGuide - Neue Informationen | \(userModel.user?.lastName ?? "tempLastName")")
+                        }
+                        .disabled(!MFMailComposeViewController.canSendMail())
+                        .padding()
+                        .font(.custom("Lustria-Regular", size: 18))
+                        .background(Color(hex: 0x425C54))
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .minimumScaleFactor(0.5)
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity)
                     }
-                    .padding()
                 }
+                .padding()
             }
             .onAppear {
                 weddingMotto = userModel.user?.weddingMotto ?? ""
@@ -209,6 +207,7 @@ struct InfoForPhotographView: View {
                         .padding(.top, 8)
                 }
                 TextEditor(text: $text)
+                    .foregroundColor(.black)
                     .disableAutocorrection(true)
                     .autocapitalization(.sentences)
                     .onSubmit {

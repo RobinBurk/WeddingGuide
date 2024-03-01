@@ -79,8 +79,10 @@ struct HomeView: View {
         }
     }
     
-    func menuSection(_ geometry: GeometryProxy) -> some View {
-        LazyVGrid(columns: [
+    func menuSection(_ geometry: GeometryProxy) -> some View { 
+        let itemSize = min(geometry.size.width/3 - 40 - 20, (geometry.size.height * 0.55)/3 - 60)
+
+        return LazyVGrid(columns: [
             GridItem(spacing: 20),
             GridItem(spacing: 20),
             GridItem(spacing: 0)
@@ -90,7 +92,7 @@ struct HomeView: View {
                     Button(action: {
                         isActionSheetOrganisationPresented.toggle()
                     }) {
-                        Text("Organisation").menuItemStyle(width: geometry.size.width/3 - 40 - 20, height: (geometry.size.height * 0.55)/3 - 60, lineLimit: 1)
+                        Text("Organisation").menuItemStyle(width: itemSize, height: itemSize, lineLimit: 1)
                     }.actionSheet(isPresented: $isActionSheetOrganisationPresented) {
                         ActionSheet(
                             title: Text("Was willst du sehen?"),
@@ -108,11 +110,11 @@ struct HomeView: View {
                 } else {
                     if isPremium {
                         NavigationLink(destination: TimeLineView(parentGeometry: geometry)) {
-                            Text("Ablaufplan").menuItemStyle(width: geometry.size.width/3 - 40 - 20, height: (geometry.size.height * 0.55)/3 - 60,lineLimit: 1)
+                            Text("Ablaufplan").menuItemStyle(width: itemSize, height: itemSize,lineLimit: 1)
                         }
                     }
                     else {
-                        Text("Ablaufplan").menuItemStyle(width: geometry.size.width/3 - 40 - 20, height: (geometry.size.height * 0.55)/3 - 60,lineLimit: 1)
+                        Text("Ablaufplan").menuItemStyle(width: itemSize, height: itemSize, lineLimit: 1)
                     }
                 }
                 LockedView(isVIP: Binding<Bool>(
@@ -126,10 +128,10 @@ struct HomeView: View {
             ZStack {
                 if (userModel.user?.isVIP ?? false) || isPremium {
                     NavigationLink(destination: InspirationView(parentGeometry: geometry)) {
-                        Text("Inspiration").menuItemStyle(width: geometry.size.width/3 - 40 - 20, height: (geometry.size.height * 0.55)/3 - 60,lineLimit: 1)
+                        Text("Inspiration").menuItemStyle(width: itemSize, height: itemSize,lineLimit: 1)
                     }
                 } else {
-                    Text("Inspiration").menuItemStyle(width: geometry.size.width/3 - 40 - 20, height: (geometry.size.height * 0.55)/3 - 60,lineLimit: 1)
+                    Text("Inspiration").menuItemStyle(width: itemSize, height: itemSize,lineLimit: 1)
                 }
                 LockedView(isVIP: Binding<Bool>(
                     get: { userModel.user?.isVIP ?? false },
@@ -143,16 +145,16 @@ struct HomeView: View {
                 if (userModel.user?.isVIP ?? false) {
                     NavigationLink(destination: ServiceProviderView(parentGeometry: geometry)) {
                         Text("Dienstleister")
-                            .menuItemStyle(width: geometry.size.width/3 - 40 - 20, height: (geometry.size.height * 0.55)/3 - 60, lineLimit: 2)
+                            .menuItemStyle(width: itemSize, height: itemSize, lineLimit: 2)
                     }
                 } else {
                     if isPremium {
                         NavigationLink(destination: GuestListView(parentGeometry: geometry)) {
                             Text("Gästeliste")
-                                .menuItemStyle(width: geometry.size.width/3 - 40 - 20, height: (geometry.size.height * 0.55)/3 - 60, lineLimit: 2)
+                                .menuItemStyle(width: itemSize, height: itemSize, lineLimit: 2)
                         }
                     } else {
-                        Text("Gästeliste").menuItemStyle(width: geometry.size.width/3 - 40 - 20, height: (geometry.size.height * 0.55)/3 - 60, lineLimit: 2)
+                        Text("Gästeliste").menuItemStyle(width: itemSize, height: itemSize, lineLimit: 2)
                     }
                 }
                 LockedView(isVIP: Binding<Bool>(
@@ -166,10 +168,10 @@ struct HomeView: View {
             ZStack {
                 if (userModel.user?.isVIP ?? false) || isPremium {
                     NavigationLink(destination: WitnessesView(parentGeometry: geometry)) {
-                        Text("Trauzeugen").menuItemStyle(width: geometry.size.width/3 - 40 - 20, height: (geometry.size.height * 0.55)/3 - 60,lineLimit: 2)
+                        Text("Trauzeugen").menuItemStyle(width: itemSize, height: itemSize, lineLimit: 2)
                     }
                 } else {
-                    Text("Trauzeugen").menuItemStyle(width: geometry.size.width/3 - 40 - 20, height: (geometry.size.height * 0.55)/3 - 60,lineLimit: 1)
+                    Text("Trauzeugen").menuItemStyle(width: itemSize, height: itemSize, lineLimit: 1)
                 }
                 LockedView(isVIP: Binding<Bool>(
                     get: { userModel.user?.isVIP ?? false },
@@ -184,7 +186,7 @@ struct HomeView: View {
                     Button(action: {
                         isActionSheetGadgetPresented.toggle()
                     }) {
-                        Text("Gadgets").menuItemStyle(width: geometry.size.width/3 - 40 - 20, height: (geometry.size.height * 0.55)/3 - 60,lineLimit: 2)
+                        Text("Gadgets").menuItemStyle(width: itemSize, height: itemSize, lineLimit: 2)
                     }.actionSheet(isPresented: $isActionSheetGadgetPresented) {
                         ActionSheet(
                             title: Text("Was willst du sehen?"),
@@ -204,7 +206,7 @@ struct HomeView: View {
                     }
                 }
                 else {
-                    Text("Gadgets").menuItemStyle(width: geometry.size.width/3 - 40 - 20, height: (geometry.size.height * 0.55)/3 - 60,lineLimit: 2)
+                    Text("Gadgets").menuItemStyle(width: itemSize, height: itemSize, lineLimit: 2)
                 }
                 LockedView(isVIP: Binding<Bool>(
                     get: { userModel.user?.isVIP ?? false },
@@ -218,10 +220,10 @@ struct HomeView: View {
             ZStack {
                 if (userModel.user?.isVIP ?? false) || isPremium {
                     NavigationLink(destination: NiceToKnowView(parentGeometry: geometry)) {
-                        Text("Nice to know").menuItemStyle(width: geometry.size.width/3 - 40 - 20, height: (geometry.size.height * 0.55)/3 - 60, lineLimit: 2)
+                        Text("Nice to know").menuItemStyle(width: itemSize, height: itemSize, lineLimit: 2)
                     }
                 } else {
-                    Text("Nice to know").menuItemStyle(width: geometry.size.width/3 - 40 - 20, height: (geometry.size.height * 0.55)/3 - 60, lineLimit: 2)
+                    Text("Nice to know").menuItemStyle(width: itemSize, height: itemSize, lineLimit: 2)
                 }
                 LockedView(isVIP: Binding<Bool>(
                     get: { userModel.user?.isVIP ?? false },
@@ -233,15 +235,15 @@ struct HomeView: View {
             }
             
             NavigationLink(destination: GettingReadyView(parentGeometry: geometry)) {
-                Text("Getting Ready").menuItemStyle(width: geometry.size.width/3 - 40 - 20, height: (geometry.size.height * 0.55)/3 - 60,lineLimit: 2)
+                Text("Getting Ready").menuItemStyle(width: itemSize, height: itemSize, lineLimit: 2)
             }
             
             NavigationLink(destination: NoGosView(parentGeometry: geometry)) {
-                Text("No-Go's").menuItemStyle(width: geometry.size.width/3 - 40 - 20, height: (geometry.size.height * 0.55)/3 - 60,lineLimit: 1)
+                Text("No-Go's").menuItemStyle(width: itemSize, height: itemSize, lineLimit: 1)
             }
             
             NavigationLink(destination: InfoForPhotographView(parentGeometry: geometry)) {
-                Text("Infos für Fotografen").menuItemStyle(width: geometry.size.width/3 - 40 - 20, height: (geometry.size.height * 0.55)/3 - 60,lineLimit: 2)
+                Text("Infos für Fotografen").menuItemStyle(width: itemSize, height: itemSize, lineLimit: 2)
             }
             
             NavigationLink(isActive: $navigationTimeLineIsActive, destination: { TimeLineView(parentGeometry: geometry) }, label: {

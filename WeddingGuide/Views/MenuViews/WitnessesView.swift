@@ -45,38 +45,36 @@ struct WitnessesView: View {
     ]
     
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Ihr habt eure Trauzeugen gefunden? Jetzt geht es darum, gemeinsam mit ihnen die Planung eures großen Tages anzugehen! Hier sind einige ToDo‘s, damit nichts vergessen wird und die Trauzeugen wissen, welche Aufgaben auf sie zukommen:")
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Ihr habt eure Trauzeugen gefunden? Jetzt geht es darum, gemeinsam mit ihnen die Planung eures großen Tages anzugehen! Hier sind einige ToDo‘s, damit nichts vergessen wird und die Trauzeugen wissen, welche Aufgaben auf sie zukommen:")
                     .foregroundColor(.black)
-                    
-                    SectionHeaderView(title: "Vor der Hochzeit", isExpanded: $section1Expanded)
-                    if section1Expanded {
-                        CheckboxListView(items: checkboxTitlesBeforeWedding, checkboxStates: $checkboxStatesBeforeWedding)
-                        {
-                            userModel.user?.checkboxStatesBeforeWedding = checkboxStatesBeforeWedding
-                            userModel.update()
-                        }
+                
+                SectionHeaderView(title: "Vor der Hochzeit", isExpanded: $section1Expanded)
+                if section1Expanded {
+                    CheckboxListView(items: checkboxTitlesBeforeWedding, checkboxStates: $checkboxStatesBeforeWedding)
+                    {
+                        userModel.user?.checkboxStatesBeforeWedding = checkboxStatesBeforeWedding
+                        userModel.update()
                     }
-                    
-                    SectionHeaderView(title: "Am Hochzeitstag", isExpanded: $section2Expanded)
-                    if section2Expanded {
-                        CheckboxListView(items: checkboxTitlesOnWeddingDay, checkboxStates: $checkboxStatesOnWeddingDay)
-                        {
-                            userModel.user?.checkboxStatesOnWeddingDay = checkboxStatesOnWeddingDay
-                            userModel.update()
-                        }
+                }
+                
+                SectionHeaderView(title: "Am Hochzeitstag", isExpanded: $section2Expanded)
+                if section2Expanded {
+                    CheckboxListView(items: checkboxTitlesOnWeddingDay, checkboxStates: $checkboxStatesOnWeddingDay)
+                    {
+                        userModel.user?.checkboxStatesOnWeddingDay = checkboxStatesOnWeddingDay
+                        userModel.update()
                     }
-                    
-                    Text("Liebes Brautpaar: Vergesst nicht: Es ist eure Hochzeit! Entscheidet, was ihr wollt, und sprecht euch gut mit euren Trauzeugen ab – dann kann nichts schiefgehen.")
-                        .foregroundColor(.black)
-                }.padding()
-            }
-            .onAppear{
-                checkboxStatesBeforeWedding = userModel.user?.checkboxStatesBeforeWedding ?? Array(repeating: false, count: 11)
-                checkboxStatesOnWeddingDay = userModel.user?.checkboxStatesOnWeddingDay ?? Array(repeating: false, count: 16)
-            }
+                }
+                
+                Text("Liebes Brautpaar: Vergesst nicht: Es ist eure Hochzeit! Entscheidet, was ihr wollt, und sprecht euch gut mit euren Trauzeugen ab – dann kann nichts schiefgehen.")
+                    .foregroundColor(.black)
+            }.padding()
+        }
+        .onAppear{
+            checkboxStatesBeforeWedding = userModel.user?.checkboxStatesBeforeWedding ?? Array(repeating: false, count: 11)
+            checkboxStatesOnWeddingDay = userModel.user?.checkboxStatesOnWeddingDay ?? Array(repeating: false, count: 16)
         }
         .onTapGesture {
             // Dismiss the keyboard when tapped outside the text fields

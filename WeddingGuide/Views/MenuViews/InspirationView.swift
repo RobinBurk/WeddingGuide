@@ -19,37 +19,34 @@ struct InspirationView: View {
     @State private var showAllImages5 : Bool = false
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                ScrollView(.vertical, showsIndicators: false) {
-                    InspirationCategoryView(categoryName: "Anzug", showAllImages: { showAllImages1 = true }, imageUrls: dataManager.imageUrlsAnzug, selectedImage: $selectedImage)
-                    InspirationCategoryView(categoryName: "Hochzeitskleid", showAllImages: { showAllImages2 = true }, imageUrls: dataManager.imageUrlsHochzeitskleid, selectedImage: $selectedImage)
-                    InspirationCategoryView(categoryName: "Brautstrauß", showAllImages: { showAllImages3 = true }, imageUrls: dataManager.imageUrlsBrautstrauss, selectedImage: $selectedImage)
-                    InspirationCategoryView(categoryName: "Frisuren", showAllImages: { showAllImages4 = true }, imageUrls: dataManager.imageUrlsFrisuren, selectedImage: $selectedImage)
-                    InspirationCategoryView(categoryName: "Dekoration", showAllImages: { showAllImages5 = true }, imageUrls: dataManager.imageUrlsDekoration, selectedImage: $selectedImage)
-                }
-                .fullScreenCover(isPresented: $showAllImages1){
-                    AllImagesView(selectedImage: $selectedImage, images: dataManager.imageUrlsAnzug)
-                }
-                .fullScreenCover(isPresented: $showAllImages2){
-                    AllImagesView(selectedImage: $selectedImage, images: dataManager.imageUrlsHochzeitskleid)
-                }
-                .fullScreenCover(isPresented: $showAllImages3){
-                    AllImagesView(selectedImage: $selectedImage, images: dataManager.imageUrlsBrautstrauss)
-                }
-                .fullScreenCover(isPresented: $showAllImages4){
-                    AllImagesView(selectedImage: $selectedImage, images: dataManager.imageUrlsFrisuren)
-                }
-                .fullScreenCover(isPresented: $showAllImages5){
-                    AllImagesView(selectedImage: $selectedImage, images: dataManager.imageUrlsDekoration)
-                }
-                
-                if selectedImage != nil {
-                    BigImageView(selectedImage: $selectedImage).swipeToDismiss()
-                }
+        ZStack {
+            ScrollView(.vertical, showsIndicators: false) {
+                InspirationCategoryView(categoryName: "Anzug", showAllImages: { showAllImages1 = true }, imageUrls: dataManager.imageUrlsAnzug, selectedImage: $selectedImage)
+                InspirationCategoryView(categoryName: "Hochzeitskleid", showAllImages: { showAllImages2 = true }, imageUrls: dataManager.imageUrlsHochzeitskleid, selectedImage: $selectedImage)
+                InspirationCategoryView(categoryName: "Brautstrauß", showAllImages: { showAllImages3 = true }, imageUrls: dataManager.imageUrlsBrautstrauss, selectedImage: $selectedImage)
+                InspirationCategoryView(categoryName: "Frisuren", showAllImages: { showAllImages4 = true }, imageUrls: dataManager.imageUrlsFrisuren, selectedImage: $selectedImage)
+                InspirationCategoryView(categoryName: "Dekoration", showAllImages: { showAllImages5 = true }, imageUrls: dataManager.imageUrlsDekoration, selectedImage: $selectedImage)
+            }
+            .fullScreenCover(isPresented: $showAllImages1){
+                AllImagesView(selectedImage: $selectedImage, images: dataManager.imageUrlsAnzug)
+            }
+            .fullScreenCover(isPresented: $showAllImages2){
+                AllImagesView(selectedImage: $selectedImage, images: dataManager.imageUrlsHochzeitskleid)
+            }
+            .fullScreenCover(isPresented: $showAllImages3){
+                AllImagesView(selectedImage: $selectedImage, images: dataManager.imageUrlsBrautstrauss)
+            }
+            .fullScreenCover(isPresented: $showAllImages4){
+                AllImagesView(selectedImage: $selectedImage, images: dataManager.imageUrlsFrisuren)
+            }
+            .fullScreenCover(isPresented: $showAllImages5){
+                AllImagesView(selectedImage: $selectedImage, images: dataManager.imageUrlsDekoration)
+            }
+            
+            if selectedImage != nil {
+                BigImageView(selectedImage: $selectedImage).swipeToDismiss()
             }
         }
-        
         .onAppear{
             isLoadingImages = true
             dataManager.loadImages(name: "images_anzug", appendAction: { url in

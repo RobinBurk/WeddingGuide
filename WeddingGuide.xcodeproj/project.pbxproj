@@ -78,7 +78,6 @@
 		40CFCD762B2F3E2C0024728A /* BackgroundImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40CFCD752B2F3E2C0024728A /* BackgroundImageView.swift */; };
 		40DE2B952B7A875100767132 /* ChangePasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40DE2B942B7A875100767132 /* ChangePasswordView.swift */; };
 		40DE2B972B7A931400767132 /* ChangeEmail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40DE2B962B7A931400767132 /* ChangeEmail.swift */; };
-		40E4A0F32B2468450031E9E1 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E4A0F22B2468450031E9E1 /* NetworkMonitor.swift */; };
 		40E5BF852B5AC7A5004F0D4F /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 40E5BF842B5AC7A5004F0D4F /* FirebaseAuth */; };
 		40E5BF872B5AC7CA004F0D4F /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 40E5BF862B5AC7CA004F0D4F /* FirebaseFirestoreSwift */; };
 		40E5BF892B5ACB53004F0D4F /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E5BF882B5ACB53004F0D4F /* AuthenticationView.swift */; };
@@ -175,7 +174,6 @@
 		40CFCD752B2F3E2C0024728A /* BackgroundImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundImageView.swift; sourceTree = "<group>"; };
 		40DE2B942B7A875100767132 /* ChangePasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordView.swift; sourceTree = "<group>"; };
 		40DE2B962B7A931400767132 /* ChangeEmail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeEmail.swift; sourceTree = "<group>"; };
-		40E4A0F22B2468450031E9E1 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		40E5BF882B5ACB53004F0D4F /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -292,7 +290,6 @@
 				40CF432E2B582641008CDD32 /* Database */,
 				40B861AC2AF9370D0089BD04 /* UI */,
 				40B861AD2AF9371F0089BD04 /* Helper.swift */,
-				40E4A0F22B2468450031E9E1 /* NetworkMonitor.swift */,
 			);
 			path = Helper;
 			sourceTree = "<group>";
@@ -615,7 +612,6 @@
 				40CC0E0F2B4AF11C00042934 /* InfoForPhotographView.swift in Sources */,
 				402380D22B12067C00369F56 /* TypingAnimationView.swift in Sources */,
 				406A5BEF2B0E5CBF0013C97B /* WelcomeView.swift in Sources */,
-				40E4A0F32B2468450031E9E1 /* NetworkMonitor.swift in Sources */,
 				40B861AB2AF936DC0089BD04 /* InspirationView.swift in Sources */,
 				40CFCD762B2F3E2C0024728A /* BackgroundImageView.swift in Sources */,
 				40B861B22AF938570089BD04 /* NiceToKnowView.swift in Sources */,

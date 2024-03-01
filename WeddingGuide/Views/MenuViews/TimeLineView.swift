@@ -16,77 +16,79 @@ struct TimeLineView: View {
     @State private var rememberedIndexForEdit: Int? = nil
     
     var body: some View {
-        NavigationView {
-            VStack (alignment: .leading){
-                Spacer()
-                Text("Hochzeitstag: \(formattedWeddingDay())")
-                    .font(.custom("Lustria-Regular", size: 20))
-                    .foregroundColor(.black)
-                    .padding()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.4)
-                
-                List {
-                    ForEach(self.timeLineItems.indices, id: \.self) { index in
-                        TimeLineItemView(timeLineItem: $timeLineItems[index])
-                            .cornerRadius(8)
-                            .padding(5)
-                            .contextMenu {
-                                Button(action: {
-                                    rememberedIndexForEdit = index
-                                    changeTimeLineItemIsActive.toggle()
-                                }) {
-                                    Label("Bearbeiten", systemImage: "pencil")
-                                }
-                                
-                                Button(action: {
-                                    deleteUserTimeLineItem(at: index)
-                                }) {
-                                    Text("Löschen")
-                                    Image(systemName: "trash")
-                                }
+        VStack (alignment: .leading){
+            Spacer()
+            Text("Hochzeitstag: \(formattedWeddingDay())")
+                .font(.custom("Lustria-Regular", size: 20))
+                .foregroundColor(.black)
+                .padding()
+                .lineLimit(1)
+                .minimumScaleFactor(0.4)
+            
+            List {
+                ForEach(self.timeLineItems.indices, id: \.self) { index in
+                    TimeLineItemView(timeLineItem: $timeLineItems[index])
+                        .cornerRadius(8)
+                        .padding(5)
+                        .contextMenu {
+                            Button(action: {
+                                rememberedIndexForEdit = index
+                                changeTimeLineItemIsActive.toggle()
+                            }) {
+                                Label("Bearbeiten", systemImage: "pencil")
                             }
-                    }
-                    .onDelete { indexSet in
-                        DispatchQueue.main.async {
-                            userModel.user?.timeLineItems.remove(atOffsets: indexSet)
-                            userModel.update()
-                            timeLineItems = userModel.user?.timeLineItems ?? []
+                            
+                            Button(action: {
+                                deleteUserTimeLineItem(at: index)
+                            }) {
+                                Text("Löschen")
+                                Image(systemName: "trash")
+                            }
                         }
+                }
+                .onDelete { indexSet in
+                    DispatchQueue.main.async {
+                        userModel.user?.timeLineItems.remove(atOffsets: indexSet)
+                        userModel.user?.timeLineItems.sort(by: { $0.startTime < $1.startTime })
+                        userModel.update()
+                        timeLineItems = userModel.user?.timeLineItems ?? []
                     }
                 }
-                .highPriorityGesture(DragGesture())
-                .shadow(color: Color.gray.opacity(0.8), radius: 3, x: 0, y: 2)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .scrollContentBackground(.hidden)
-                
+            }
+            .highPriorityGesture(DragGesture())
+            .shadow(color: Color.gray.opacity(0.8), radius: 3, x: 0, y: 2)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .scrollContentBackground(.hidden)
+            
+            Spacer()
+            
+            HStack{
                 Spacer()
-                
-                HStack{
-                    Spacer()
-                    NavigationLink(destination: ChangeTimeLineItem(mode: Mode.add).onDisappear {
+                NavigationLink(destination: ChangeTimeLineItem(mode: Mode.add)
+                    .onDisappear {
+                        userModel.user?.timeLineItems.sort(by: { $0.startTime < $1.startTime })
                         timeLineItems = userModel.user?.timeLineItems ?? []}
-                    ) {
-                        Label("", systemImage: "plus.circle")
-                            .font(.custom("Lustria-Regular", size: 30))
-                            .foregroundColor(Color(hex: 0x425C54))
-                    }
-                    .padding(.top, 15)
-                    .padding(.horizontal, 10)
-                    .padding(.bottom, parentGeometry.size.height * 0.02)
-                    Spacer()
+                ) {
+                    Label("", systemImage: "plus.circle")
+                        .font(.custom("Lustria-Regular", size: 30))
+                        .foregroundColor(Color(hex: 0x425C54))
                 }
-                .background(Color(hex: 0xB8C7B9))
-                
-                NavigationLink(destination: ChangeTimeLineItem(
-                    mode: .edit,
-                    index: rememberedIndexForEdit ?? 0,
-                    items: userModel.user?.timeLineItems ?? []
-                ).onDisappear {
-                    timeLineItems = userModel.user?.timeLineItems ?? []
-                }, isActive: $changeTimeLineItemIsActive) {
-                    EmptyView()
-                }
+                .padding(.top, 15)
+                .padding(.horizontal, 10)
+                .padding(.bottom, parentGeometry.size.height * 0.02)
+                Spacer()
+            }
+            .background(Color(hex: 0xB8C7B9))
+            
+            NavigationLink(destination: ChangeTimeLineItem(
+                mode: .edit,
+                index: rememberedIndexForEdit ?? 0,
+                items: userModel.user?.timeLineItems ?? []
+            ).onDisappear {
+                userModel.user?.timeLineItems.sort(by: { $0.startTime < $1.startTime })
+                timeLineItems = userModel.user?.timeLineItems ?? []
+            }, isActive: $changeTimeLineItemIsActive) {
+                EmptyView()
             }
         }
         .onAppear {
@@ -113,6 +115,7 @@ struct TimeLineView: View {
     private func deleteUserTimeLineItem(at index: Int) {
         DispatchQueue.main.async {
             userModel.user?.timeLineItems.remove(at: index)
+            userModel.user?.timeLineItems.sort(by: { $0.startTime < $1.startTime })
             userModel.update()
             timeLineItems = userModel.user?.timeLineItems ?? []
         }
