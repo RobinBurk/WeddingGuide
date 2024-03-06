@@ -64,7 +64,7 @@ struct BudgetView: View {
     func formatNumber(_ number: Double) -> String {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .decimal
-        numberFormatter.maximumFractionDigits = -1
+        numberFormatter.maximumFractionDigits = 2
         return numberFormatter.string(from: NSNumber(value: number)) ?? ""
     }
 }

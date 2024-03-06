@@ -16,10 +16,6 @@ struct ChangeGuestListItem: View {
         self.mode = mode
         self._newItem = State(initialValue: GuestListItem())
         self.index = -1 // Set a default value for index, or you can make it optional
-        
-        print("xxnumberOfPeople: \(newItem.numberOfPeople)")
-        print("xxfamilyName: \(newItem.familyName)")
-        print("xxtableNumber: \(newItem.tableNumber)")
     }
     
     // Initializer for the edit mode
@@ -33,10 +29,7 @@ struct ChangeGuestListItem: View {
             // Handle the case where index is out of range, set a default or handle it accordingly.
             self.index = -1
             self._newItem = State(initialValue: GuestListItem())
-        }  
-        print("numberOfPeople: \(newItem.numberOfPeople)")
-        print("familyName: \(newItem.familyName)")
-        print("tableNumber: \(newItem.tableNumber)")
+        }
     }
     
     var body: some View {
@@ -52,6 +45,11 @@ struct ChangeGuestListItem: View {
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .font(.custom("Lustria-Regular", size: 20))
                 .foregroundColor(.black)
+                .onTapGesture {
+                    DispatchQueue.main.async {
+                        UIApplication.shared.sendAction(#selector(UIResponder.selectAll(_:)), to: nil, from: nil, for: nil)
+                    }
+                }
             
             HStack {
                 Text("Tischnummer:")
@@ -74,6 +72,11 @@ struct ChangeGuestListItem: View {
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .font(.custom("Lustria-Regular", size: 20))
                 .foregroundColor(.black)
+                .onTapGesture {
+                    DispatchQueue.main.async {
+                        UIApplication.shared.sendAction(#selector(UIResponder.selectAll(_:)), to: nil, from: nil, for: nil)
+                    }
+                }
             }.padding(.leading, 20)
             
             HStack {
@@ -97,6 +100,11 @@ struct ChangeGuestListItem: View {
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .font(.custom("Lustria-Regular", size: 20))
                 .foregroundColor(.black)
+                .onTapGesture {
+                    DispatchQueue.main.async {
+                        UIApplication.shared.sendAction(#selector(UIResponder.selectAll(_:)), to: nil, from: nil, for: nil)
+                    }
+                }
             }.padding(.leading, 20)
             
             Button(action: {
@@ -155,7 +163,7 @@ struct ChangeGuestListItem: View {
                 goBack()
             }) {
                 HStack {
-                    Image(systemName: "xmark.circle")
+                    Image(systemName: "xmark")
                         .font(.custom("Lustria-Regular", size: 20))
                     Text("ABBRECHEN")
                         .font(.custom("Lustria-Regular", size: 18))
@@ -202,7 +210,7 @@ struct ChangeGuestListItem: View {
     var actionButtonImage: Image {
         switch mode {
         case .add:
-            return Image(systemName: "plus.circle")
+            return Image(systemName: "plus")
         case .edit:
             return  Image(systemName: "pencil")
         }

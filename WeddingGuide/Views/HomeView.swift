@@ -301,10 +301,9 @@ struct HamburgerMenu: View {
     
     var body: some View {
         ZStack {
-            Circle()
-                .foregroundColor(Color(hex: 0x425C54))
-            NavigationLink(destination: ProfileView(parentGeometry: parentGeometry)
-            ) {
+            Circle().foregroundColor(Color(hex: 0x425C54))
+            
+            NavigationLink(destination: ProfileView(parentGeometry: parentGeometry)) {
                 Image(systemName: "line.horizontal.3")
                     .font(.title)
                     .foregroundColor(Color.white)

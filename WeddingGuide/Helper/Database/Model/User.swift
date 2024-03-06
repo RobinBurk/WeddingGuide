@@ -31,4 +31,5 @@ struct User : Codable {
     var plannedActions = ""
     var additionalInfo = ""
     var isVIP = false
+    var emailPhotograph = ""
 }

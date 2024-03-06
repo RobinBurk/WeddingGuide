@@ -9,6 +9,7 @@ struct TimeLineItemView: View {
                 Text(formattedTime(timeLineItem.startTime))
                     .font(.custom("Lustria-Regular", size: 16))
                     .foregroundColor(.black)
+                    .frame(width: 40, alignment: .leading)
                 
                 if timeLineItem.startTime != timeLineItem.endTime {
                     Text(formattedTime(timeLineItem.endTime))

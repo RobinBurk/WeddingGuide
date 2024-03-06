@@ -70,7 +70,7 @@ struct BudgetManagementView: View {
             
             HStack {
                 VStack (alignment: .leading){
-                    Text("Einkommen")
+                    Text("Einnahmen")
                         .font(.custom("Lustria-Regular", size: 15))
                         .foregroundColor(.black)
                     Text(incomeText)
@@ -89,37 +89,44 @@ struct BudgetManagementView: View {
             }
             .padding(.horizontal, 10)
             
-            List {
-                ForEach(budgetItems.indices, id: \.self) { index in
-                    BudgetItemView(budgetItem: $budgetItems[index], parent: self)
-                        .cornerRadius(8)
-                        .padding(5)
-                        .contextMenu {
-                            Button(action: {
-                                rememberedIndexForEdit = index
-                                changeBudgetItemIsActive.toggle()
-                            }) {
-                                Label("Bearbeiten", systemImage: "pencil")
-                            }
-                            
-                            Button(action: {
-                                deleteUserBudgetItem(at: index)
-                            }) {
-                                Text("Löschen")
-                                Image(systemName: "trash")
-                            }
-                        }
-                }
-                .onDelete { indexSet in
-                    userModel.user?.budgetItems.remove(atOffsets: indexSet)
-                    userModel.update()
-                    updateBudget()
-                }
+            if budgetItems.isEmpty {
+                Text("Keine Items vorhanden.")
+                    .foregroundColor(.gray)
+                    .padding()
             }
-            .highPriorityGesture(DragGesture())
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .shadow(color: Color.gray.opacity(0.8), radius: 3, x: 0, y: 2)
-            .scrollContentBackground(.hidden)
+            else {
+                List {
+                    ForEach(budgetItems.indices, id: \.self) { index in
+                        BudgetItemView(budgetItem: $budgetItems[index], parent: self)
+                            .cornerRadius(8)
+                            .padding(5)
+                            .contextMenu {
+                                Button(action: {
+                                    rememberedIndexForEdit = index
+                                    changeBudgetItemIsActive.toggle()
+                                }) {
+                                    Label("Bearbeiten", systemImage: "pencil")
+                                }
+                                
+                                Button(action: {
+                                    deleteUserBudgetItem(at: index)
+                                }) {
+                                    Text("Löschen")
+                                    Image(systemName: "trash")
+                                }
+                            }
+                    }
+                    .onDelete { indexSet in
+                        userModel.user?.budgetItems.remove(atOffsets: indexSet)
+                        userModel.update()
+                        updateBudget()
+                    }
+                }
+                .highPriorityGesture(DragGesture())
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .shadow(color: Color.gray.opacity(0.8), radius: 3, x: 0, y: 2)
+                .scrollContentBackground(.hidden)
+            }
             
             Spacer()
             
@@ -130,7 +137,7 @@ struct BudgetManagementView: View {
                         updateBudget()
                     }
                 ) {
-                    Label("", systemImage: "plus.circle")
+                    Label("", systemImage: "plus")
                         .font(.custom("Lustria-Regular", size: 30))
                         .foregroundColor(Color(hex: 0x425C54))
                 }

@@ -25,6 +25,8 @@ struct ProfileView: View {
                 .padding(.horizontal)
             StartBudgetView(parentGeometry: parentGeometry)
                 .padding(.horizontal)
+            EmailPhotographView(parentGeometry: parentGeometry)
+                .padding(.horizontal)
             
             Button(action: {
                 if !(userModel.user?.isVIP ?? false) {
@@ -50,13 +52,25 @@ struct ProfileView: View {
                 .padding(.top)
             }
             .alert("VIP-Zugriff", isPresented: $showStartCodeInputDialog) {
-                TextField("Startcode", text: $enteredStartcode)
-                    .foregroundColor(.black)
+                Group {
+                    TextField("Startcode", text: $enteredStartcode)
+                        .foregroundColor(.black)
+                        .autocorrectionDisabled()
+                        .autocapitalization(.none)
+                        .onTapGesture {
+                            DispatchQueue.main.async {
+                                UIApplication.shared.sendAction(#selector(UIResponder.selectAll(_:)), to: nil, from: nil, for: nil)
+                            }
+                        }
+                }
+                .preferredColorScheme(.light)
+                
                 Button("OK") {
                     userModel.tryToAccessVIP(startcode: enteredStartcode) { error in
                         if let error = error {
                             print("Fehler beim Versuch, VIP-Zugriff zu erhalten: \(error.localizedDescription)")
-                            startCodeErrorMessage = error.localizedDescription
+                            startCodeErrorMessage = "Das war leider nicht richtig 😢"
+                            showStartCodeErrorDialog.toggle()
                         } else {
                             print("VIP-Zugriff erfolgreich erhalten.")
                             counterVIPAccessed+=1
@@ -66,8 +80,12 @@ struct ProfileView: View {
                 Button("Abbrechen", role: .cancel) { }
             }
             .preferredColorScheme(.light)
-            .alert("Error", isPresented: $showStartCodeErrorDialog) {
-                Text("Das hat nicht geklappt. Fehler: \(startCodeErrorMessage)")
+            .alert(isPresented: $showStartCodeErrorDialog) {
+                Alert(
+                    title: Text("Fehler"),
+                    message: Text("\(startCodeErrorMessage)"),
+                    dismissButton: .default(Text("Schließen"))
+                )
             }
             .confettiCannon(counter: $counter, num: 30, confettis: [.text("🕊️"), .text("🤍")], confettiSize: 20.0, openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: 170)
             .confettiCannon(counter: $counterVIPAccessed, num: 100, confettis: [.text("🕊️"), .text("🤍")], confettiSize: 20.0, openingAngle: Angle(degrees: 0), closingAngle: Angle(degrees: 360), radius: 170, repetitions: 2)
@@ -147,7 +165,7 @@ struct EmailView: View {
     
     var body: some View {
         HStack {
-            Text("Email")
+            Text("E-Mail")
                 .font(.custom("Lustria-Regular", size: 16))
                 .foregroundColor(.secondary)
                 .background(Color.white)
@@ -248,6 +266,11 @@ struct StartBudgetView: View {
                 .multilineTextAlignment(.trailing)
                 .minimumScaleFactor(0.4)
                 .lineLimit(1)
+                .onTapGesture {
+                    DispatchQueue.main.async {
+                        UIApplication.shared.sendAction(#selector(UIResponder.selectAll(_:)), to: nil, from: nil, for: nil)
+                    }
+                }
             Button(action: {
                 // Remove Euro symbol if present and trim whitespaces
                 var sanitizedBudget = editedBudget.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -281,6 +304,51 @@ struct StartBudgetView: View {
         }
         .onAppear {
             editedBudget = "\(userModel.user?.startBudget ?? 0.0)€"
+        }
+        .padding(.vertical, 2)
+        .padding(.horizontal, 15)
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(radius: 5)
+    }
+}
+
+struct EmailPhotographView: View {
+    @EnvironmentObject var userModel: UserViewModel
+    
+    var parentGeometry: GeometryProxy
+    
+    var body: some View {
+        HStack {
+            VStack {
+                Text("Fotograf")
+                    .font(.custom("Lustria-Regular", size: 16))
+                    .foregroundColor(.secondary)
+                    .background(Color.white)
+                    .cornerRadius(10)
+                    .minimumScaleFactor(0.4)
+                    .lineLimit(1)
+                    .padding(.trailing , 15)
+            }
+            Spacer()
+            Text(userModel.user?.emailPhotograph ?? "")
+                .font(.custom("Lustria-Regular", size: 16))
+                .foregroundColor(.black)
+                .fontWeight(.bold)
+                .minimumScaleFactor(0.4)
+                .lineLimit(1)
+            NavigationLink(destination: ChangeEmailPhotographView(parentGeometry: parentGeometry)) {
+                Text("Ändern")
+                    .font(.custom("Lustria-Regular", size: 16))
+                    .padding(.vertical, 4)
+                    .padding(.horizontal, 15)
+                    .foregroundColor(.white)
+                    .background(Color(hex: 0x425C54))
+                    .cornerRadius(10)
+                    .minimumScaleFactor(0.4)
+                    .lineLimit(1)
+            }
+            .padding(.vertical, 2)
         }
         .padding(.vertical, 2)
         .padding(.horizontal, 15)

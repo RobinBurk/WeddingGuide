@@ -16,7 +16,7 @@ struct TimeLineView: View {
     @State private var rememberedIndexForEdit: Int? = nil
     
     var body: some View {
-        VStack (alignment: .leading){
+        VStack (alignment: .leading, spacing: 0){
             Spacer()
             Text("Hochzeitstag: \(formattedWeddingDay())")
                 .font(.custom("Lustria-Regular", size: 20))
@@ -25,40 +25,46 @@ struct TimeLineView: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.4)
             
-            List {
-                ForEach(self.timeLineItems.indices, id: \.self) { index in
-                    TimeLineItemView(timeLineItem: $timeLineItems[index])
-                        .cornerRadius(8)
-                        .padding(5)
-                        .contextMenu {
-                            Button(action: {
-                                rememberedIndexForEdit = index
-                                changeTimeLineItemIsActive.toggle()
-                            }) {
-                                Label("Bearbeiten", systemImage: "pencil")
+            if timeLineItems.isEmpty {
+                Text("Die Liste ist leer")
+                    .foregroundColor(.gray)
+                    .padding()
+            } else {
+                List {
+                    ForEach(self.timeLineItems.indices, id: \.self) { index in
+                        TimeLineItemView(timeLineItem: $timeLineItems[index])
+                            .cornerRadius(8)
+                            .padding(5)
+                            .contextMenu {
+                                Button(action: {
+                                    rememberedIndexForEdit = index
+                                    changeTimeLineItemIsActive.toggle()
+                                }) {
+                                    Label("Bearbeiten", systemImage: "pencil")
+                                }
+                                
+                                Button(action: {
+                                    deleteUserTimeLineItem(at: index)
+                                }) {
+                                    Text("Löschen")
+                                    Image(systemName: "trash")
+                                }
                             }
-                            
-                            Button(action: {
-                                deleteUserTimeLineItem(at: index)
-                            }) {
-                                Text("Löschen")
-                                Image(systemName: "trash")
-                            }
+                    }
+                    .onDelete { indexSet in
+                        DispatchQueue.main.async {
+                            userModel.user?.timeLineItems.remove(atOffsets: indexSet)
+                            userModel.user?.timeLineItems.sort(by: { $0.startTime < $1.startTime })
+                            userModel.update()
+                            timeLineItems = userModel.user?.timeLineItems ?? []
                         }
-                }
-                .onDelete { indexSet in
-                    DispatchQueue.main.async {
-                        userModel.user?.timeLineItems.remove(atOffsets: indexSet)
-                        userModel.user?.timeLineItems.sort(by: { $0.startTime < $1.startTime })
-                        userModel.update()
-                        timeLineItems = userModel.user?.timeLineItems ?? []
                     }
                 }
+                .highPriorityGesture(DragGesture())
+                .shadow(color: Color.gray.opacity(0.8), radius: 3, x: 0, y: 2)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .scrollContentBackground(.hidden)
             }
-            .highPriorityGesture(DragGesture())
-            .shadow(color: Color.gray.opacity(0.8), radius: 3, x: 0, y: 2)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .scrollContentBackground(.hidden)
             
             Spacer()
             
@@ -69,7 +75,7 @@ struct TimeLineView: View {
                         userModel.user?.timeLineItems.sort(by: { $0.startTime < $1.startTime })
                         timeLineItems = userModel.user?.timeLineItems ?? []}
                 ) {
-                    Label("", systemImage: "plus.circle")
+                    Label("", systemImage: "plus")
                         .font(.custom("Lustria-Regular", size: 30))
                         .foregroundColor(Color(hex: 0x425C54))
                 }

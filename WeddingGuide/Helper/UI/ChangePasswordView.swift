@@ -153,7 +153,7 @@ struct ChangePasswordView: View {
             case .success:
                 return Alert(
                     title: Text("Erfolgreich"),
-                    message: Text("Password wurde erfolgreich geändert."),
+                    message: Text("Passwort wurde erfolgreich geändert."),
                     dismissButton: .default(Text("OK"))
                 )
             }
@@ -179,7 +179,7 @@ struct ChangePasswordView: View {
     
     private func changePassword() {
         guard newPassword == confirmPassword else {
-            alertMessage = "Passwords do not match."
+            alertMessage = "Passwörter stimmen nicht überein."
             showAlert.toggle()
             return
         }

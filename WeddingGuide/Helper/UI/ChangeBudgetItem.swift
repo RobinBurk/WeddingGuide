@@ -16,10 +16,6 @@ struct ChangeBudgetItem: View {
         self.mode = mode
         self._newItem = State(initialValue: BudgetItem())
         self.index = -1 // Set a default value for index, or you can make it optional
-        
-        print("XXDescription: \(newItem.description)")
-        print("XXType: \(newItem.type)")
-        print("XXAmount: \(newItem.amount)")
     }
     
     // Initializer for the edit mode
@@ -34,10 +30,6 @@ struct ChangeBudgetItem: View {
             self.index = -1
             self._newItem = State(initialValue: BudgetItem())
         }
-        
-        print("Description: \(newItem.description)")
-        print("Type: \(newItem.type)")
-        print("Amount: \(newItem.amount)")
     }
     
     var body: some View {
@@ -47,12 +39,17 @@ struct ChangeBudgetItem: View {
             Text(titleText)
                 .font(.custom("Lustria-Regular", size: 26))
                 .foregroundColor(.black)
-           
+            
             TextField("Beschreibung", text: $newItem.description)
                 .font(.custom("Lustria-Regular", size: 20))
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
                 .foregroundColor(.black)
+                .onTapGesture {
+                    DispatchQueue.main.async {
+                        UIApplication.shared.sendAction(#selector(UIResponder.selectAll(_:)), to: nil, from: nil, for: nil)
+                    }
+                }
             
             HStack {
                 Text("Typ")
@@ -62,7 +59,7 @@ struct ChangeBudgetItem: View {
                 Spacer()
                 
                 Picker("Typ", selection: $newItem.type) {
-                    Text("Einkommen").tag(BudgetItemType.income)
+                    Text("Einnahmen").tag(BudgetItemType.income)
                     Text("Ausgabe").tag(BudgetItemType.expense)
                 }
                 .accentColor(.black)
@@ -81,11 +78,16 @@ struct ChangeBudgetItem: View {
                     }
                 })
             )
-                .font(.custom("Lustria-Regular", size: 20))
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .keyboardType(.decimalPad)
-                .padding()
-                .foregroundColor(newItem.type == .expense ? Color(hex: 0x990000) : Color(hex: 0x425C54))
+            .font(.custom("Lustria-Regular", size: 20))
+            .textFieldStyle(RoundedBorderTextFieldStyle())
+            .keyboardType(.decimalPad)
+            .padding()
+            .foregroundColor(newItem.type == .expense ? Color(hex: 0x990000) : Color(hex: 0x425C54))
+            .onTapGesture {
+                    DispatchQueue.main.async {
+                        UIApplication.shared.sendAction(#selector(UIResponder.selectAll(_:)), to: nil, from: nil, for: nil)
+                    }
+                }
             
             Button(action: {
                 // Check if the description is empty.
@@ -143,7 +145,7 @@ struct ChangeBudgetItem: View {
                 goBack()
             }) {
                 HStack {
-                    Image(systemName: "xmark.circle")
+                    Image(systemName: "xmark")
                         .font(.custom("Lustria-Regular", size: 20))
                     Text("ABBRECHEN")
                         .font(.custom("Lustria-Regular", size: 18))
@@ -173,7 +175,7 @@ struct ChangeBudgetItem: View {
     
     func goBack() {
         presentationMode.wrappedValue.dismiss()
-    } 
+    }
     
     var titleText: String {
         switch mode {
@@ -196,7 +198,7 @@ struct ChangeBudgetItem: View {
     var actionButtonImage: Image {
         switch mode {
         case .add:
-            return Image(systemName: "plus.circle")
+            return Image(systemName: "plus")
         case .edit:
             return  Image(systemName: "pencil")
         }

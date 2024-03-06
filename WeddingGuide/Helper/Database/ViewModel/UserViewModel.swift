@@ -26,6 +26,8 @@ class UserViewModel: ObservableObject {
     enum FirestoreError: Error {
         case noSnapshot
         case notAuthenticated
+        case emptyCollection
+        case noMatchingCode
     }
     
     // MARK: Firebase Auth Functions
@@ -237,16 +239,13 @@ class UserViewModel: ObservableObject {
     }
     
     func tryToAccessVIP(startcode: String, completion: @escaping (Error?) -> Void) {
-        // Überprüfen, ob der Benutzer authentifiziert ist
         guard userIsAuthenticated else {
             completion(FirestoreError.notAuthenticated)
             return
         }
         
-        // Referenz auf die Firestore-Sammlung "startcodes"
         let startcodesRef = db.collection("startcodes")
         
-        // Abrufen aller Dokumente in der Sammlung "startcodes"
         startcodesRef.getDocuments { (querySnapshot, error) in
             if let error = error {
                 completion(error)
@@ -258,15 +257,23 @@ class UserViewModel: ObservableObject {
                 return
             }
             
-            // Iterieren durch jedes Dokument in der Sammlung
+            if querySnapshot.documents.isEmpty {
+                completion(FirestoreError.emptyCollection)
+                return
+            }
+            
             for document in querySnapshot.documents {
-                // Überprüfen, ob das Feld "code" im Dokument vorhanden ist und mit dem übergebenen Startcode übereinstimmt
                 if let code = document.data()["code"] as? String, code == startcode {
-                    // Den VIP-Status des Benutzers setzen
                     self.user?.isVIP = true
                     self.update()
                     
-                    // Löschen des Startcodes aus der Firestore-Sammlung "startcodes"
+                    // Test is not delete
+                    if code == "test" {
+                        completion(nil)
+                        return
+                    }
+                    
+                    // Delete startcode from collection.
                     startcodesRef.document(document.documentID).delete { error in
                         if let error = error {
                             completion(error)
@@ -276,6 +283,8 @@ class UserViewModel: ObservableObject {
                     }
                 }
             }
+            
+            completion(FirestoreError.noMatchingCode)
         }
     }
 }

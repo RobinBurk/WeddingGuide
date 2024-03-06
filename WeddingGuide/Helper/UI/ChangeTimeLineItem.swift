@@ -47,12 +47,22 @@ struct ChangeTimeLineItem: View {
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .font(.custom("Lustria-Regular", size: 20))
                 .foregroundColor(.black)
+                .onTapGesture {
+                    DispatchQueue.main.async {
+                        UIApplication.shared.sendAction(#selector(UIResponder.selectAll(_:)), to: nil, from: nil, for: nil)
+                    }
+                }
             
             TextField("Zusatztext", text: $newItem.extra)
                 .padding()
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .font(.custom("Lustria-Regular", size: 20))
                 .foregroundColor(.black)
+                .onTapGesture {
+                    DispatchQueue.main.async {
+                        UIApplication.shared.sendAction(#selector(UIResponder.selectAll(_:)), to: nil, from: nil, for: nil)
+                    }
+                }
             
             DatePicker("Startzeit", selection: $startTime, displayedComponents: .hourAndMinute)
                 .datePickerStyle(GraphicalDatePickerStyle())
@@ -128,7 +138,7 @@ struct ChangeTimeLineItem: View {
                 goBack()
             }) {
                 HStack {
-                    Image(systemName: "xmark.circle")
+                    Image(systemName: "xmark")
                         .font(.custom("Lustria-Regular", size: 20))
                     Text("ABBRECHEN")
                         .font(.custom("Lustria-Regular", size: 18))
@@ -201,7 +211,7 @@ struct ChangeTimeLineItem: View {
     var actionButtonImage: Image {
         switch mode {
         case .add:
-            return Image(systemName: "plus.circle")
+            return Image(systemName: "plus")
         case .edit:
             return  Image(systemName: "pencil")
         }

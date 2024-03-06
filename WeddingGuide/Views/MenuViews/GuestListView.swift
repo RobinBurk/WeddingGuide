@@ -17,39 +17,45 @@ struct GuestListView: View {
                 .padding(.top, 15)
                 .padding(.horizontal)
             
-            List {
-                ForEach(self.guestListItems.indices, id: \.self) { index in
-                    GuestListItemView(guestListItem: $guestListItems[index])
-                        .cornerRadius(8)
-                        .padding(5)
-                        .contextMenu {
-                            Button(action: {
-                                rememberedIndexForEdit = index
-                                changeGuestListItemIsActive.toggle()
-                            }) {
-                                Label("Bearbeiten", systemImage: "pencil")
+            if guestListItems.isEmpty {
+                Text("Die Liste ist leer")
+                    .foregroundColor(.gray)
+                    .padding()
+            } else {
+                List {
+                    ForEach(self.guestListItems.indices, id: \.self) { index in
+                        GuestListItemView(guestListItem: $guestListItems[index])
+                            .cornerRadius(8)
+                            .padding(5)
+                            .contextMenu {
+                                Button(action: {
+                                    rememberedIndexForEdit = index
+                                    changeGuestListItemIsActive.toggle()
+                                }) {
+                                    Label("Bearbeiten", systemImage: "pencil")
+                                }
+                                
+                                Button(action: {
+                                    deleteGuestListLineItem(at: index)
+                                }) {
+                                    Label("Löschen", systemImage: "trash")
+                                }
                             }
-                            
-                            Button(action: {
-                                deleteGuestListLineItem(at: index)
-                            }) {
-                                Label("Löschen", systemImage: "trash")
-                            }
+                    }
+                    .onDelete { indexSet in
+                        DispatchQueue.main.async {
+                            userModel.user?.guestListItems.remove(atOffsets: indexSet)
+                            userModel.user?.guestListItems.sort(by: { $0.tableNumber < $1.tableNumber })
+                            userModel.update()
+                            guestListItems = userModel.user?.guestListItems ?? []
                         }
-                }
-                .onDelete { indexSet in
-                    DispatchQueue.main.async {
-                        userModel.user?.guestListItems.remove(atOffsets: indexSet)
-                        userModel.user?.guestListItems.sort(by: { $0.tableNumber < $1.tableNumber })
-                        userModel.update()
-                        guestListItems = userModel.user?.guestListItems ?? []
                     }
                 }
+                .highPriorityGesture(DragGesture())
+                .shadow(color: Color.gray.opacity(0.8), radius: 3, x: 0, y: 2)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .scrollContentBackground(.hidden)
             }
-            .highPriorityGesture(DragGesture())
-            .shadow(color: Color.gray.opacity(0.8), radius: 3, x: 0, y: 2)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .scrollContentBackground(.hidden)
             
             Spacer()
             
@@ -61,7 +67,7 @@ struct GuestListView: View {
                         guestListItems = userModel.user?.guestListItems ?? []
                     }
                 ) {
-                    Label("", systemImage: "plus.circle")
+                    Label("", systemImage: "plus")
                         .font(.custom("Lustria-Regular", size: 30))
                         .foregroundColor(Color(hex: 0x425C54))
                 }

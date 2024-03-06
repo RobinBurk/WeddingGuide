@@ -45,35 +45,27 @@ struct InfoForPhotographView: View {
                     createSectionWithTitle("Geplante Aktionen", text: $plannedActions, hint: "Spalier, Rituale, Spiele, Überraschungen")
                     createSectionWithTitle("Weitere wichtige Informationen", text: $additionalInfo, hint: "")
                     
-                    HStack {
-                        Button("Senden an Jovi") {
-                            updateUser()
-                            sendEmail(recipient: "kwickshot@gmx.de", subject: "WeddingGuide - Neue Informationen | \(userModel.user?.lastName ?? "tempLastName")")
-                        }
-                        .disabled(!MFMailComposeViewController.canSendMail())
-                        .padding()
-                        .font(.custom("Lustria-Regular", size: 18))
-                        .background(Color(hex: 0x425C54))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .minimumScaleFactor(0.5)
-                        .lineLimit(1)
-                        .frame(maxWidth: .infinity)
+                    Button("Senden an Fotografen") {
+                        updateUser()
                         
-                        Button("Senden an Julia") {
-                            updateUser()
-                            sendEmail(recipient: "julia_krause_fotografie@web.de", subject: "WeddingGuide - Neue Informationen | \(userModel.user?.lastName ?? "tempLastName")")
+                        if (userModel.user?.emailPhotograph.isEmpty ?? true) {
+                            alertMessage = "Bitte im Profil zuerst E-Mail Adresse ihres Fotografen eintragen."
+                            alertTitle = "Keine E-Mail"
+                            showAlert.toggle()
+                            return
                         }
-                        .disabled(!MFMailComposeViewController.canSendMail())
-                        .padding()
-                        .font(.custom("Lustria-Regular", size: 18))
-                        .background(Color(hex: 0x425C54))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .minimumScaleFactor(0.5)
-                        .lineLimit(1)
-                        .frame(maxWidth: .infinity)
+                        
+                        sendEmail(recipient: userModel.user?.emailPhotograph ?? "", subject: "WeddingGuide - Neue Informationen | \(userModel.user?.lastName ?? "tempLastName")")
                     }
+                    .disabled(!MFMailComposeViewController.canSendMail())
+                    .padding()
+                    .font(.custom("Lustria-Regular", size: 18))
+                    .background(Color(hex: 0x425C54))
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                    .minimumScaleFactor(0.5)
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity)
                 }
                 .padding()
             }

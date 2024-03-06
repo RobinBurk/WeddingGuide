@@ -30,6 +30,12 @@ struct ChangeStartBudget: View {
                             startBudgetFormatted = formatBudgetText(filtered)
                             newStartBudget = Double(filtered) ?? 0
                         })
+                        .onTapGesture {
+                              // Select all text when the TextField is tapped
+                              DispatchQueue.main.async {
+                                  UIApplication.shared.sendAction(#selector(UIResponder.selectAll(_:)), to: nil, from: nil, for: nil)
+                              }
+                          }
                 }
                 .frame(height: 60) // Adjust height as needed
                 .cornerRadius(10) // Match the corner radius with the RoundedRectangle
@@ -58,6 +64,12 @@ struct ChangeStartBudget: View {
             }
             
             Spacer()
+        }
+        .onAppear {
+            if let startBudget = userModel.user?.startBudget {
+                startBudgetFormatted = formatBudgetText(String(startBudget))
+                newStartBudget = startBudget
+            }
         }
         .onTapGesture {
             // Dismiss the keyboard when tapped outside the text fields.

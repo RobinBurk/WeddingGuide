@@ -10,6 +10,9 @@ struct BudgetItemView: View {
             Text(budgetItem.description)
                 .font(.custom("Lustria-Regular", size: 13))
                 .foregroundColor(.black)
+                .padding(.trailing, max(0, CGFloat(10 - budgetItem.description.count)))
+                .padding(.leading, 0)
+                .frame(width: 70, alignment: .leading) // Fixed width for 10 characters
             
             Rectangle()
                 .fill(Color(hex: 0xB8C7B9))
@@ -20,10 +23,15 @@ struct BudgetItemView: View {
                 .font(.custom("Lustria-Regular", size: 13))
             
             Picker("", selection: $budgetItem.type) {
-                Text("Einkommen").tag(BudgetItemType.income)
+                Text("Einnahmen")
+                    .tag(BudgetItemType.income)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.2)
                     .font(.custom("Lustria-Regular", size: 13))
                 Text("Ausgabe").tag(BudgetItemType.expense)
                     .font(.custom("Lustria-Regular", size: 13))
+                    .minimumScaleFactor(0.2)
+                    .lineLimit(1)
             }
             .pickerStyle(MenuPickerStyle())
             .font(.custom("Lustria-Regular", size: 14))
